@@ -4,7 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#08111f">
+  <meta name="description" content="Future is a beginner-friendly programming and job-preparation roadmap.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Future">
   <title>Future | Built by Shubham Rao</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -35,5 +43,6 @@
   <div class="toast" id="toast" role="status"></div>
   <div class="modal-backdrop hidden" id="onboardingModal"><div class="modal"><button class="modal-close" id="closeOnboarding" aria-label="Close">×</button><div class="eyebrow">WELCOME TO FUTURE</div><h2>Let’s map your next move.</h2><p>Tell us a little about yourself so Colure can make your roadmap feel personal.</p><form id="onboardingForm"><label>Your name<input name="name" required placeholder="e.g. Aanya"></label><label>Current level<select name="level"><option>Complete beginner</option><option>Some basics</option><option>Already building projects</option></select></label><label>Career goal<select name="goal"><option>Become a developer</option><option>Land an internship</option><option>Prepare for my first job</option></select></label><label>Daily learning time<select name="time"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option></select></label><button class="primary-button wide" type="submit">Start my journey <span>→</span></button></form></div></div>
   <script src="app.js"></script>
+  <script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));</script>
 </body>
 </html>

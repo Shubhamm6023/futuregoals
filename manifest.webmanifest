@@ -1,0 +1,14 @@
+{
+  "name": "Future - Built by Shubham Rao",
+  "short_name": "Future",
+  "description": "A clear programming-to-job roadmap for beginners.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#08111f",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
