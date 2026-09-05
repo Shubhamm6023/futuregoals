@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08111f">
+  <title>Future | Built by Shubham Rao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand"><span class="brand-mark">↗</span><span>Future</span></div>
+      <p class="brand-credit">Built by Shubham Rao</p>
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="home"><span>⌂</span> Home</button>
+        <button class="nav-item" data-view="roadmap"><span>◈</span> Roadmap</button>
+        <button class="nav-item" data-view="learn"><span>▣</span> Learn</button>
+        <button class="nav-item" data-view="videos"><span>▶</span> Best Videos</button>
+        <button class="nav-item" data-view="notes"><span>≡</span> Notes</button>
+        <button class="nav-item" data-view="practice"><span>✓</span> Practice</button>
+        <button class="nav-item" data-view="projects"><span>◇</span> Projects</button>
+        <button class="nav-item" data-view="jobs"><span>★</span> Job Prep</button>
+      </nav>
+      <div class="sidebar-bottom"><button class="nav-item" data-view="profile"><span>◉</span> Profile</button><p class="sidebar-note">Your next chapter<br><strong>starts today.</strong></p></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button><div class="breadcrumb" id="breadcrumb">Home / Dashboard</div><div class="top-actions"><button class="icon-button" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">☾</button><button class="profile-chip" data-view="profile"><span class="avatar small">S</span><span id="topUser">Student</span></button></div></header>
+      <div id="app"></div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="modal-backdrop hidden" id="onboardingModal"><div class="modal"><button class="modal-close" id="closeOnboarding" aria-label="Close">×</button><div class="eyebrow">WELCOME TO FUTURE</div><h2>Let’s map your next move.</h2><p>Tell us a little about yourself so Colure can make your roadmap feel personal.</p><form id="onboardingForm"><label>Your name<input name="name" required placeholder="e.g. Aanya"></label><label>Current level<select name="level"><option>Complete beginner</option><option>Some basics</option><option>Already building projects</option></select></label><label>Career goal<select name="goal"><option>Become a developer</option><option>Land an internship</option><option>Prepare for my first job</option></select></label><label>Daily learning time<select name="time"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option></select></label><button class="primary-button wide" type="submit">Start my journey <span>→</span></button></form></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
