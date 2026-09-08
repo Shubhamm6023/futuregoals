@@ -1,0 +1,26 @@
+{
+  "packageId": "com.futuregoals.app",
+  "host": "https://shubhamm6023.github.io",
+  "name": "Future",
+  "launcherName": "Future",
+  "display": "standalone",
+  "themeColor": "#08111f",
+  "themeColorDark": "#08111f",
+  "navigationColor": "#08111f",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#08111f",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#07111f",
+  "enableNotifications": false,
+  "startUrl": "/futuregoals/",
+  "iconUrl": "https://shubhamm6023.github.io/futuregoals/icon-512.png",
+  "maskableIconUrl": "https://shubhamm6023.github.io/futuregoals/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/app/future-release.keystore",
+    "alias": "future"
+  },
+  "appVersionName": "3.0.0",
+  "appVersionCode": 3,
+  "webManifestUrl": "https://shubhamm6023.github.io/futuregoals/manifest.webmanifest"
+}

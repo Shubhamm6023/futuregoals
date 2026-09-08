@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.futuregoals.app",
+      "sha256_cert_fingerprints": [
+        "9F:F2:38:A2:BC:2D:E4:FE:14:F8:39:AB:97:19:7B:E0:91:FB:14:DF:72:FF:2B:69:3F:A2:04:ED:E6:D6:86:6C"
+      ]
+    }
+  }
+]

@@ -1,0 +1,80 @@
+name: Android Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Bubblewrap downloads the app icons from the live site, so wait until
+      # the latest GitHub Pages deploy (triggered by the main push) is live.
+      - name: Wait for live site
+        run: |
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" https://shubhamm6023.github.io/futuregoals/icon-512.png || true)
+            if [ "$code" = "200" ]; then echo "Site is live ✓"; exit 0; fi
+            echo "waiting for Pages deploy... ($i/60)"
+            sleep 10
+          done
+          echo "Site not live after 10 minutes"
+          exit 1
+
+      # Builds a signed APK + AAB using Bubblewrap's official container
+      # (includes the Android SDK + JDK). Passwords come from the env vars
+      # below; the keystore is committed at android/future-release.keystore.
+      # NOTE: before publishing to Google Play, replace this keystore with a
+      # private one stored as a GitHub secret and delete it from the repo.
+      - name: Build signed APK + AAB with Bubblewrap
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: futuregoal2026
+          BUBBLEWRAP_KEY_PASSWORD: futuregoal2026
+        run: |
+          docker run --rm -v "$PWD/android:/app" -w /app \
+            -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
+            ghcr.io/googlechromelabs/bubblewrap:latest update --skipVersionUpgrade
+          docker run --rm -v "$PWD/android:/app" -w /app \
+            -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
+            ghcr.io/googlechromelabs/bubblewrap:latest build --skipPwaValidation
+
+      - name: List build outputs
+        run: ls -la android/ | grep -E "apk|aab" || true
+
+      - name: Upload APK + AAB as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: future-android
+          path: |
+            android/app-release-signed.apk
+            android/app-release-bundle.aab
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Future ${{ github.ref_name }}
+          files: |
+            android/app-release-signed.apk
+            android/app-release-bundle.aab
+          body: |
+            **Future v${{ github.ref_name }}** — Android release.
+
+            📱 **Install on your phone:** download `app-release-signed.apk`,
+            open it, and allow "Install unknown apps" when prompted.
+
+            🛒 **Google Play (optional):** upload `app-release-bundle.aab`
+            to the Play Console.
+          draft: false
+          prerelease: false
