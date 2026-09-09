@@ -41,28 +41,27 @@ jobs:
         env:
           BUBBLEWRAP_KEYSTORE_PASSWORD: futuregoal2026
           BUBBLEWRAP_KEY_PASSWORD: futuregoal2026
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
-          run_bw() {
-            if ! "$@" 2>&1 | tee bw.log; then
-              {
-                echo "### Bubblewrap step failed: $*"
-                echo '```text'
-                tail -n 120 bw.log
-                echo '```'
-              } >> "$GITHUB_STEP_SUMMARY"
-              BODY=$(jq -n --arg b "$(tail -c 6000 bw.log)" '{title:"Auto-debug: Bubblewrap build failed", body:$b}')
-              curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
-                "https://api.github.com/repos/$GITHUB_REPOSITORY/issues" -d "$BODY" > /dev/null || true
-              exit 1
-            fi
+          report() { # $1 = label of the failed command
+            echo "### $1 failed" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 150 bw.log >> "$GITHUB_STEP_SUMMARY" || true
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 150 bw.log > bw-tail.txt || true
+            gh issue create --title "Auto-debug: $1 failed" --body-file bw-tail.txt \
+              || echo "(issue creation failed — check the run Summary tab)"
+            exit 1
           }
-          run_bw docker run --rm -v "$PWD/android:/app" -w /app \
+          docker run --rm -v "$PWD/android:/app" -w /app \
             -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
-            ghcr.io/googlechromelabs/bubblewrap:latest update --skipVersionUpgrade
-          run_bw docker run --rm -v "$PWD/android:/app" -w /app \
+            ghcr.io/googlechromelabs/bubblewrap:latest update --skipVersionUpgrade 2>&1 | tee bw.log \
+            || report "bubblewrap update"
+          docker run --rm -v "$PWD/android:/app" -w /app \
             -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
-            ghcr.io/googlechromelabs/bubblewrap:latest build --skipPwaValidation
+            ghcr.io/googlechromelabs/bubblewrap:latest build --skipPwaValidation 2>&1 | tee bw.log \
+            || report "bubblewrap build"
 
       - name: List build outputs
         run: ls -la android/ | grep -E "apk|aab" || true
