@@ -41,3 +41,25 @@ a full-screen Trusted Web Activity.
 
 ⚠️ Before publishing to **Google Play**, generate your own private keystore,
 store it as a GitHub secret, and remove the committed one.
+
+## Digital asset links (full-screen mode)
+
+When the installed app opens, Android verifies it against the **domain root**:
+
+```
+https://shubhamm6023.github.io/.well-known/assetlinks.json
+```
+
+That root URL is served by the companion repo
+[`Shubhamm6023/Shubhamm6023.github.io`](https://github.com/Shubhamm6023/Shubhamm6023.github.io),
+which contains only `.well-known/assetlinks.json` and a `.nojekyll` file
+(legacy Jekyll builds silently hide dot-directories, which made the file
+return 404 until `.nojekyll` was added).
+
+This repo also keeps a copy at `.well-known/assetlinks.json` (served under
+`/futuregoals/`, used by browser-based PWA installs) plus a `.nojekyll` for
+consistency.
+
+👉 If you ever change the signing key, update the SHA-256 fingerprint in
+**both** copies of `assetlinks.json`, otherwise the app loses full-screen
+mode and shows a browser URL bar.
