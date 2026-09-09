@@ -9,7 +9,7 @@ const topics = [
   ['SQL', 'Core skill', 'Ask useful questions of data with simple database queries.', 'SQL Tutorial - Full Database Course', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=HXV3zeQKqGY', 'SQL is how you ask a database for information. You say what you need; the database finds it.', 'SELECT name, email\nFROM students\nWHERE active = true;'],
   ['HTML & CSS', 'Web foundations', 'Build clear web pages, then style interfaces people enjoy.', 'HTML & CSS Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=G3e-cpL7ofc', 'HTML gives a page structure. CSS gives it its visual style. Together they create web pages.', '<button class="primary">Start learning</button>\n.primary { background: #c4f36b; }'],
   ['JavaScript', 'Web foundations', 'Make web pages react to people with interaction and logic.', 'JavaScript Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=PkZNo7MFNFg', 'JavaScript listens for an action, does some work, and updates the page.', 'button.addEventListener("click", () => {\n  alert("You did it!");\n});'],
-  ['Flask', 'Backend', 'Build lightweight web apps with Python and turn ideas into real websites.', 'Learn Flask for Python - Full Tutorial', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=Z1RJmh_OqeA', 'Flask is a tiny Python tool that turns your code into a website. You write a function for each page, and Flask sends it to the browser.', 'from flask import Flask\napp = Flask(__name__)\n\n@app.route("/")\ndef home():\n    return "Hello, Future!"\n\nif __name__ == "__main__":\n    app.run(debug=True)'],
+  ['Flask', 'Backend', 'Build lightweight web app with Python and turn ideas into real websites.', 'Learn Flask for Python - Full Tutorial', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=Z1RJmh_OqeA', 'Flask is a tiny Python tool that turns your code into a website. You write a function for each page, and Flask sends it to the browser.', 'from flask import Flask\napp = Flask(__name__)\n\n@app.route("/")\ndef home():\n    return "Hello, Future!"\n\nif __name__ == "__main__":\n    app.run(debug=True)'],
   ['Django', 'Backend', 'A full-featured Python framework for building complete, secure web apps.', 'Python Django Web Framework - Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=F5mRW0jo-U4', 'Django gives you everything a website needs — pages, login, and a database — already wired together, so you focus on your app.', 'pip install django\ndjango-admin startproject mysite .\npython manage.py startapp tasks\npython manage.py runserver'],
   ['Git & GitHub', 'Workflow', 'Save your work safely and share it like a professional.', 'Git and GitHub for Beginners', 'Khan Academy', 'https://www.youtube.com/watch?v=RGOj5yH7evk', 'Git remembers versions of your project. GitHub is the online home where you back it up.', 'git add .\ngit commit -m "Add homepage"\ngit push origin main'],
   ['DSA', 'Interview skill', 'Train your problem-solving muscles for coding interviews.', 'Data Structures and Algorithms', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=8hly31xKli0', 'Data structures organize information. Algorithms are repeatable steps that solve a problem.', 'const largest = Math.max(...numbers);'],
@@ -73,7 +73,7 @@ const quizzes = [
     { q: 'Math.max(...numbers) returns...', opts: ['the largest number in the array', 'the smallest number', 'the total sum', 'the first number'], a: 0, why: 'Math.max finds the biggest value; the ... spread passes all array items.' }
   ],
   [
-    { q: 'What makes a strong beginner project?', opts: ['it solves one small real problem', 'it has the most lines of code', 'it copies a big app exactly', 'it never has bugs'], a: 0, why: 'A focused, finished small project teaches more and is easy to explain.' },
+    { q: 'What makes a strong beginner project?', opts: ['it solves one small real problem', 'it has the most lines of code', 'copies a big app exactly', 'it never has bugs'], a: 0, why: 'A focused, finished small project teaches more and is easy to explain.' },
     { q: 'What should you do first when starting a project?', opts: ['plan the smallest version you can finish', 'buy a domain name', 'write 1000 lines first', 'skip the plan and code everything'], a: 0, why: 'Start with the smallest useful version, finish it, then add features one at a time.' }
   ],
   [
@@ -123,6 +123,20 @@ const save = () => localStorage.setItem('futureState', JSON.stringify(state));
 const pct = () => Math.round(state.completed.length / topics.length * 100);
 const h = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
+/* ---------------- smooth YouTube link (opens in the app on phones) ---------------- */
+function ytLink(url) {
+  try {
+    const u = new URL(url);
+    const v = u.searchParams.get('v');
+    if (v) return 'https://youtu.be/' + v;
+    return 'https://www.youtube.com' + u.pathname;
+  } catch (e) { return url; }
+}
+function openVideo(url) {
+  window.open(ytLink(url), '_blank', 'noopener');
+  tone();
+}
+
 /* ---------------- sound ---------------- */
 function tone(up, freq, gain) {
   if (!state.sound || !window.AudioContext) return;
@@ -169,58 +183,19 @@ function matrix() {
   }, 50);
 }
 
-/* ---------------- hacker boot sequence ---------------- */
+/* ---------------- aesthetic logo splash (replaces terminal boot) ---------------- */
 function boot(done) {
-  const ov = document.getElementById('boot'), log = document.getElementById('bootLog'), bar = document.getElementById('bootBar');
+  const ov = document.getElementById('boot');
   if (!ov) { done && done(); return; }
-  const lines = [
-    'FUTURE OS v3.0 — SECURE TERMINAL',
-    '> loading roadmap ...................... OK',
-    '> loading best videos + hindi videos ... OK',
-    '> loading easy notes + examples ....... OK',
-    '> loading MCQs + practice ............. OK',
-    '> loading AI companion ................ OK',
-    '> connecting to SHUBHAM RAO network ... OK',
-    '> ACCESS GRANTED. WELCOME, SHUBHAM RAO.'
-  ];
-  let li = 0, skipped = false;
-  const finish = () => {
-    if (skipped) return;
-    skipped = true;
-    let p = 0;
-    const iv = setInterval(() => {
-      p += Math.random() * 14 + 8;
-      bar.style.width = Math.min(100, p) + '%';
-      if (p >= 100) {
-        clearInterval(iv);
-        tone(true, 880, 0.05); setTimeout(() => tone(true, 1320, 0.05), 90);
-        ov.classList.add('done');
-        setTimeout(() => { ov.style.display = 'none'; done && done(); }, 550);
-      }
-    }, 60);
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    ov.classList.add('done');
+    setTimeout(() => { ov.remove(); done && done(); }, 650);
   };
-  const skipAll = () => {
-    if (!skipped) {
-      skipped = true;
-      ov.classList.add('done');
-      setTimeout(() => { ov.style.display = 'none'; done && done(); }, 300);
-    }
-  };
-  ov.onclick = skipAll;
-  document.addEventListener('keydown', skipAll, { once: true });
-  const typeLine = () => {
-    const line = lines[li];
-    if (!line) { finish(); return; }
-    const p = document.createElement('div');
-    log.appendChild(p);
-    let c = 0;
-    const iv = setInterval(() => {
-      p.textContent = line.slice(0, ++c);
-      if (c % 4 === 0) tone(true, 300, 0.012);
-      if (c >= line.length) { clearInterval(iv); p.classList.add('ok'); li++; setTimeout(typeLine, 110); }
-    }, 9);
-  };
-  typeLine();
+  ov.addEventListener('click', close, { once: true });
+  setTimeout(close, 1500);
 }
 
 /* ---------------- navigation / actions ---------------- */
@@ -232,6 +207,9 @@ function nav() {
 function wrap(title, html) {
   document.getElementById('breadcrumb').textContent = 'Future / ' + title;
   app.innerHTML = '<section class="view">' + html + '</section>';
+  app.classList.remove('view-in');
+  void app.offsetWidth; /* restart the entrance animation every render */
+  app.classList.add('view-in');
   nav();
 }
 function coach() {
@@ -265,8 +243,8 @@ function learn() {
   return '<div class="lesson-top"><button class="back-link" data-view="roadmap">← All topics</button><div class="eyebrow">LESSON ' + String(topic + 1).padStart(2, '0') + ' · ' + t[1].toUpperCase() + '</div><h1>' + t[0] + '</h1><p>' + t[2] + '</p></div>' + onePlace() +
     '<div class="lesson-layout"><aside class="lesson-steps"><span class="mini-label">IN THIS LESSON</span><a href="#watch">01 Watch</a><a href="#understand">02 Easy notes</a><a href="#example">03 Example</a><a href="#quiz">04 MCQs</a><a href="#practice">05 Practice</a><button class="primary-button" data-action="complete">' + (done ? 'Completed ✓' : 'Mark complete') + '</button></aside>' +
     '<div class="lesson-content">' +
-    '<section class="lesson-block" id="watch"><span class="tag">🎬 BEST VIDEO</span><h2>' + t[3] + '</h2><p>' + t[4] + ' · clear explanation for beginners</p><div class="video-preview"><span>▶</span><div><strong>Watch this focused lesson</strong><small>Return here for the simple breakdown.</small></div><button class="primary-button" data-action="video">Play video</button></div>' +
-    (hv ? '<div class="video-preview hindi"><span>🇮🇳</span><div><strong>' + hv[0] + '</strong><small>' + hv[1] + ' · Hindi / Hinglish, easy to understand</small></div><button class="primary-button" data-action="hindi-video">Play Hindi</button></div>' : '') +
+    '<section class="lesson-block" id="watch"><span class="tag">🎬 BEST VIDEO</span><h2>' + t[3] + '</h2><p>' + t[4] + ' · clear explanation for beginners</p><div class="video-preview"><i class="glare"></i><span>▶</span><div><strong>Watch this focused lesson</strong><small>Opens in the YouTube app.</small></div><button class="primary-button" data-action="video">Play video ▶</button></div>' +
+    (hv ? '<div class="video-preview hindi"><i class="glare"></i><span>🇮🇳</span><div><strong>' + hv[0] + '</strong><small>' + hv[1] + ' · Hindi / Hinglish, easy to understand</small></div><button class="primary-button" data-action="hindi-video">Play Hindi ▶</button></div>' : '') +
     '</section>' +
     '<section class="lesson-block" id="understand"><span class="tag">📝 EASY NOTES</span><h2>Understand it in plain words.</h2><p class="big-idea">' + t[6] + '</p><div class="steps"><div><b>01</b><span>Watch the video once without trying to memorize it.</span></div><div><b>02</b><span>Copy the example and change one small thing.</span></div><div><b>03</b><span>Explain the idea in your own words.</span></div></div></section>' +
     '<section class="lesson-block notes-block" id="example"><span class="tag">💻 EXAMPLE</span><h2>Keep this tiny example nearby.</h2><pre>' + h(t[7]) + '</pre><p><strong>Remember:</strong> Understand what each part does, then change it and see what happens.</p></section>' +
@@ -275,13 +253,13 @@ function learn() {
     '</div></div>';
 }
 function ai() {
-  return '<div class="ai-page"><div class="page-intro"><div class="eyebrow">FUTURE AI</div><h1>Ask anything. Get a simple answer.</h1><p>I know every topic, every MCQ, every practice task, and every page of this app — ask me in English or Hinglish.</p></div><div class="ai-shell"><div class="ai-head"><div class="ai-spark">✺</div><div><strong>Future AI</strong><span>Knows this app + all 12 topics</span></div></div><div class="ai-chat" id="aiChat"><div class="ai-message">Namaste ' + h(state.name) + '! ✺ Ask me things like "Explain Python simply", "Ask me an MCQ", or "How do I use this app?"</div></div><div class="quick-prompts"><button data-prompt="How do I use this app?">How to use the app</button><button data-prompt="Explain the current topic simply">Explain current topic</button><button data-prompt="Ask me an MCQ">Ask me an MCQ</button><button data-prompt="Give me a practice task">Practice task</button><button data-prompt="Make a 7 day study plan">7 day plan</button><button data-prompt="Help me get job ready">Job ready</button></div><form class="ai-form" id="aiForm"><input id="aiInput" placeholder="Ask Future AI anything..." autocomplete="off"><button class="primary-button">Send →</button></form></div></div>';
+  return '<div class="ai-page"><div class="page-intro"><div class="eyebrow">FUTURE AI · POWERED BY GPT</div><h1>Ask anything. I think it through and answer right.</h1><p>Homework, coding, math, logic puzzles, general knowledge, career — ask me ANY question in English or Hinglish. I think step by step, verify my logic, and explain the right answer simply.</p></div><div class="ai-shell"><div class="ai-head"><div class="ai-spark">✺</div><div><strong>Future AI</strong><span>GPT-powered · logical thinking · answers anything</span></div><button class="text-button ai-clear" id="clearChat">↺ New chat</button></div><div class="ai-chat" id="aiChat"><div class="ai-message">Namaste ' + h(state.name) + '! ✺ I am Future AI, powered by GPT. Ask me any question — like "A bat and ball cost ₹110, the bat costs ₹100 more than the ball, what does the ball cost?" or "Explain Python simply". I reason step by step and give you the right answer.</div></div><div class="quick-prompts"><button data-prompt="How do I use this app?">How to use the app</button><button data-prompt="Explain the current topic simply">Explain current topic</button><button data-prompt="A bat and a ball cost ₹110 together. The bat costs ₹100 more than the ball. How much does the ball cost? Think carefully.">Logic puzzle 🧠</button><button data-prompt="What is the next number in the series 2, 6, 12, 20, 30, ? Explain the pattern.">Number series</button><button data-prompt="Ask me an MCQ">Ask me an MCQ</button><button data-prompt="Make me a 7 day study plan">7 day plan</button></div><form class="ai-form" id="aiForm"><input id="aiInput" placeholder="Ask Future AI anything..." autocomplete="off"><button class="primary-button">Send →</button></form></div></div>';
 }
 function jobs() {
   return '<div class="page-intro"><div class="eyebrow">FROM LEARNING TO OPPORTUNITY</div><h1>Get job ready, one practical step at a time.</h1><p>Build proof of your skills, tell your story clearly, and practice before interviews.</p></div><div class="job-banner"><div><span class="tag">START HERE</span><h2>Your weekly job-prep routine</h2><p>Build one update · solve 3 problems · improve one application · ask for feedback.</p></div><button class="primary-button" data-view="ai">Ask Future AI for a plan</button></div><h2 class="section-heading">Best job-prep videos — English</h2><div class="job-video-grid">' +
-    jobVideos.slice(0, 4).map((v, i) => '<article class="job-video"><div class="job-play">▶</div><div><span class="tag">YOUTUBE</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · beginner-friendly</p><button class="text-button" data-action="job-video" data-index="' + i + '">Watch now ↗</button></div></article>').join('') +
+    jobVideos.slice(0, 4).map((v, i) => '<article class="job-video"><i class="glare"></i><div class="job-play">▶</div><div><span class="tag">YOUTUBE</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · beginner-friendly</p><button class="text-button" data-action="job-video" data-index="' + i + '">Watch now ↗</button></div></article>').join('') +
     '</div><h2 class="section-heading">Job-prep videos — Hindi (Apna College)</h2><div class="job-video-grid">' +
-    jobVideos.slice(4).map((v, i) => '<article class="job-video"><div class="job-play">▶</div><div><span class="tag">YOUTUBE · HINDI</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · placement guidance in Hindi</p><button class="text-button" data-action="job-video" data-index="' + (i + 4) + '">Watch now ↗</button></div></article>').join('') +
+    jobVideos.slice(4).map((v, i) => '<article class="job-video"><i class="glare"></i><div class="job-play">▶</div><div><span class="tag">YOUTUBE · HINDI</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · placement guidance in Hindi</p><button class="text-button" data-action="job-video" data-index="' + (i + 4) + '">Watch now ↗</button></div></article>').join('') +
     '</div><h2 class="section-heading">Your application checklist</h2><div class="check-grid"><div class="check-item"><span>✓</span>Resume: clear project outcomes</div><div class="check-item"><span>✓</span>GitHub: 2–3 pinned projects</div><div class="check-item"><span>✓</span>LinkedIn: clear student headline</div><div class="check-item"><span>✓</span>Interview: explain your project story</div></div>';
 }
 function projects() {
@@ -291,7 +269,65 @@ function profile() {
   return '<div class="page-intro"><div class="eyebrow">YOUR SPACE</div><h1>' + h(state.name) + '’s learning journey.</h1><p>Keep showing up. Every finished topic is progress.</p></div><div class="grid profile-grid"><div class="card"><h3>Roadmap progress</h3><div class="stat-value">' + pct() + '<span>% complete</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct() + '%"></div></div><p class="stat-label" style="margin-top:14px">MCQs passed: ' + state.quizPass.length + ' · Practices done: ' + state.practice.length + ' / ' + topics.length + '</p></div><div class="card"><h3>Experience settings</h3><p class="setting-row">App sounds <button class="secondary-button" data-action="sound">' + (state.sound ? 'On' : 'Off') + '</button></p><p class="setting-row">Theme <button class="secondary-button" data-action="theme">' + (state.theme === 'dark' ? 'Dark' : 'Light') + '</button></p><p class="setting-row">Live wallpaper <button class="secondary-button" data-action="wall">' + (state.wall === 'matrix' ? 'Matrix rain' : state.wall === 'off' ? 'Off' : 'Neon orbs') + '</button></p><button class="text-button" data-action="reset">Reset demo data</button></div></div>';
 }
 
-/* ---------------- Future AI brain ---------------- */
+/* ---------------- Future AI — real GPT via Puter.js ---------------- */
+let chatHistory = []; /* session memory so follow-up questions work */
+let puterHintShown = false;
+const AI_MODELS = ['openai/gpt-5.5', 'google/gemini-3.8-flash', 'deepseek/deepseek-v4-pro'];
+const AI_SYSTEM =
+  'You are Future AI, a friendly expert tutor inside the FUTURE learning app built for SHUBHAM RAO. ' +
+  'You answer ANY question the user asks — coding, math, science, logic puzzles, general knowledge, career, or anything else. ' +
+  'RULES: ' +
+  '1) THINK LOGICALLY: reason step by step, verify your reasoning, and give the RIGHT answer with a short, clear explanation of why it is right. ' +
+  '2) Keep answers simple and beginner-friendly: short paragraphs and bullet points, never a wall of text. ' +
+  '3) If the question relates to the 12 roadmap topics (C, Python, SQL, HTML & CSS, JavaScript, Flask, Django, Git & GitHub, DSA, Projects, AI Integration, Job Prep), mention the matching lesson in the app. ' +
+  '4) If the user writes in Hindi or Hinglish, reply in simple Hinglish. ' +
+  '5) Be honest: if you are not sure, say so instead of guessing.';
+
+function aiContext(raw) {
+  const t = topics[topic];
+  return [
+    { role: 'system', content: AI_SYSTEM + ' The user is currently on the lesson for: ' + t[0] + ' — ' + t[2] + ' Their name in the app is ' + state.name + '.' },
+    ...chatHistory.slice(-10),
+    { role: 'user', content: raw }
+  ];
+}
+function aiText(resp) {
+  if (typeof resp === 'string') return resp;
+  if (resp && resp.message && resp.message.content) {
+    const c = resp.message.content;
+    if (typeof c === 'string') return c;
+    if (Array.isArray(c) && c[0]) return c[0].text || '';
+  }
+  if (resp && resp.text) return resp.text;
+  return '';
+}
+async function askGPT(raw, onChunk) {
+  if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat) throw new Error('Puter not loaded');
+  const messages = aiContext(raw);
+  let lastErr = null;
+  for (const model of AI_MODELS) {
+    try {
+      if (onChunk) {
+        const resp = await puter.ai.chat(messages, { model, stream: true });
+        let got = '';
+        for await (const part of resp) {
+          const t = aiText(part);
+          if (t) { got += t; onChunk(t); }
+        }
+        if (got.trim()) return got.trim();
+        lastErr = new Error('empty stream');
+      } else {
+        const resp = await puter.ai.chat(messages, { model });
+        const text = aiText(resp);
+        if (text.trim()) return text.trim();
+        lastErr = new Error('empty response');
+      }
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('AI unavailable');
+}
+
+/* ---------------- offline fallback brain ---------------- */
 let lastQuiz = null;
 function findTopic(x) {
   const map = [
@@ -355,7 +391,7 @@ function reply(raw) {
   }
   if (/hindi|hinglish|urdu/.test(x)) {
     const hv = hindiVideos[topic];
-    return hv ? 'Yes! Every topic has a Hindi / Hinglish video.\n\n🇮🇳 ' + hv[0] + ' by ' + hv[1] + '.\n\nOpen the LEARNING HUB and press "Play Hindi" to watch it inside the app.' : 'Open any lesson — each one has a Hindi video from Code with Harry or Apna College.';
+    return hv ? 'Yes! Every topic has a Hindi / Hinglish video.\n\n🇮🇳 ' + hv[0] + ' by ' + hv[1] + '.\n\nOpen the LEARNING HUB and press "Play Hindi" to watch it on YouTube.' : 'Open any lesson — each one has a Hindi video from Code with Harry or Apna College.';
   }
   if (/project/.test(x)) {
     return 'Best project advice: solve one small problem. Start with the smallest version, finish it, then add features one at a time. Future has 3 guided projects: a portfolio, a task tracker (Python + Flask + SQL), and an AI study buddy. Open PROJECTS to begin.';
@@ -364,7 +400,7 @@ function reply(raw) {
     return 'Here is a 7-day plan for ' + t[0] + ':\n\nDay 1–2: Watch the best video + Hindi video once.\nDay 3–4: Copy the example and change one small thing.\nDay 5: Write what you learned in your own words.\nDay 6: Do the MCQs and practice task.\nDay 7: Build a mini project with it.\n\nConsistent small steps beat long cramming sessions.';
   }
   if (/sound|music|beep/.test(x)) {
-    return 'App sounds are ' + (state.sound ? 'ON' : 'OFF') + '. Toggle them with the ♫ button in the top bar or in Profile → App sounds. Sounds play on clicks, quiz answers, and the boot screen.';
+    return 'App sounds are ' + (state.sound ? 'ON' : 'OFF') + '. Toggle them with the ♫ button in the top bar or in Profile → App sounds. Sounds play on clicks, quiz answers, and the splash screen.';
   }
   if (/theme|wallpaper|background|matrix|light|dark/.test(x)) {
     return 'You can change the look anytime:\n\n☾ Top-bar button: Dark / Light theme.\n👤 Profile → Live wallpaper: Neon orbs, Matrix rain (hacker style), or Off.\n\nThe Matrix rain wallpaper runs behind the whole app — perfect hacker vibes.';
@@ -377,41 +413,62 @@ function reply(raw) {
   }
   return t[0] + ', simply: ' + t[6] + '\n\nStart by watching the video, then try the example. Want me to ask you an MCQ or give you a practice task?';
 }
-function submit(q) {
-  if (!q.trim()) return;
+async function submit(q) {
+  q = q.trim();
+  if (!q) return;
   const c = document.getElementById('aiChat');
+  if (!c) return;
   c.insertAdjacentHTML('beforeend', '<div class="user-message">' + h(q) + '</div>');
   const wait = document.createElement('div');
-  wait.className = 'ai-message'; wait.textContent = '▋';
+  wait.className = 'ai-message';
+  wait.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
   c.appendChild(wait); c.scrollTop = c.scrollHeight;
-  document.getElementById('aiInput').value = '';
-  setTimeout(() => {
-    wait.innerHTML = h(reply(q)).replace(/\n/g, '<br>');
-    c.scrollTop = c.scrollHeight;
-    tone(true);
-  }, 450);
+  const input = document.getElementById('aiInput');
+  if (input) input.value = '';
+  chatHistory.push({ role: 'user', content: q });
+  if (!puterHintShown) {
+    puterHintShown = true;
+    toast('Connecting to GPT… if a Puter sign-in popup appears, sign in free to continue.', true);
+  }
+  try {
+    let full = '';
+    await askGPT(q, chunk => {
+      full += chunk;
+      wait.innerHTML = h(full).replace(/\n/g, '<br>');
+      c.scrollTop = c.scrollHeight;
+    });
+    if (!full.trim()) throw new Error('empty');
+    chatHistory.push({ role: 'assistant', content: full.trim() });
+    if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+  } catch (e) {
+    /* offline fallback: the built-in brain answers about the app */
+    const fb = reply(q);
+    wait.innerHTML = h(fb).replace(/\n/g, '<br>');
+    chatHistory.push({ role: 'assistant', content: fb });
+  }
+  c.scrollTop = c.scrollHeight;
+  tone(true);
 }
 
-/* ---------------- video modal ---------------- */
-function video(i, kind) {
-  let title, meta, url;
-  if (kind === 'job') {
-    const v = jobVideos[i];
-    title = v[0]; meta = v[1] + ' · Best for job prep'; url = v[2];
-  } else if (kind === 'hi') {
-    const v = hindiVideos[topic];
-    title = v[0]; meta = v[1] + ' · Hindi / Hinglish'; url = v[2];
-  } else {
-    const t = topics[topic];
-    title = t[3]; meta = t[4] + ' · Best for beginners'; url = t[5];
-  }
-  const id = new URL(url).searchParams.get('v');
-  document.getElementById('videoModalTitle').textContent = title;
-  document.getElementById('videoModalMeta').textContent = meta;
-  document.getElementById('videoFrame').src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-  document.getElementById('videoDirectLink').href = url;
-  document.getElementById('videoModal').classList.remove('hidden');
-  tone();
+/* ---------------- 3D tilt on video cards ---------------- */
+function bindVideoTilt() {
+  if (matchMedia('(hover: none)').matches) return;
+  document.querySelectorAll('.video-preview, .job-video').forEach(el => {
+    if (el.dataset.tiltBound) return;
+    el.dataset.tiltBound = '1';
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      el.classList.add('tilting');
+      el.style.transform = 'perspective(750px) rotateX(' + ((0.5 - py) * 7).toFixed(2) + 'deg) rotateY(' + ((px - 0.5) * 9).toFixed(2) + 'deg) translateY(-3px)';
+      el.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+      el.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+    });
+    el.addEventListener('mouseleave', () => {
+      el.classList.remove('tilting');
+      el.style.transform = '';
+    });
+  });
 }
 
 /* ---------------- actions ---------------- */
@@ -438,9 +495,9 @@ function quizPick(btn) {
 }
 function act(a, b) {
   if (a === 'continue') { view = 'learn'; render(); }
-  else if (a === 'video') video();
-  else if (a === 'hindi-video') video(0, 'hi');
-  else if (a === 'job-video') video(+b.dataset.index, 'job');
+  else if (a === 'video') openVideo(topics[topic][5]);
+  else if (a === 'hindi-video') { const hv = hindiVideos[topic]; if (hv) openVideo(hv[2]); }
+  else if (a === 'job-video') { const v = jobVideos[+b.dataset.index]; if (v) openVideo(v[2]); }
   else if (a === 'complete') { if (!state.completed.includes(topic)) { state.completed.push(topic); save(); } toast('Lesson completed. Great work!', true); render(); }
   else if (a === 'practice') { if (!state.practice.includes(topic)) { state.practice.push(topic); save(); toast('Practice done. You are building skill!', true); } render(); }
   else if (a === 'sound') { state.sound = !state.sound; save(); render(); }
@@ -462,9 +519,12 @@ function render() {
   document.querySelectorAll('.nav-list .nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   const all = { home: ['Dashboard', home], roadmap: ['Roadmap', roadmap], learn: ['Learning Hub', learn], ai: ['Ask Future AI', ai], projects: ['Projects', projects], jobs: ['Job Preparation', jobs], profile: ['Profile', profile] };
   wrap(all[view][0], all[view][1]());
+  bindVideoTilt();
   if (view === 'ai') {
     document.querySelectorAll('[data-prompt]').forEach(x => x.onclick = () => submit(x.dataset.prompt));
     document.getElementById('aiForm').onsubmit = e => { e.preventDefault(); submit(document.getElementById('aiInput').value); };
+    const cc = document.getElementById('clearChat');
+    if (cc) cc.onclick = () => { chatHistory = []; render(); toast('New chat started.', true); };
   }
   if (view === 'learn') {
     document.querySelectorAll('[data-quiz]').forEach(x => x.onclick = () => quizPick(x));
@@ -475,9 +535,6 @@ function render() {
 document.getElementById('themeToggle').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
 document.getElementById('soundToggle').onclick = () => { state.sound = !state.sound; save(); render(); };
 document.getElementById('mobileMenu').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
-const closeVideo = () => { document.getElementById('videoFrame').src = ''; document.getElementById('videoModal').classList.add('hidden'); };
-document.getElementById('closeVideo').onclick = closeVideo;
-document.getElementById('videoModal').onclick = e => { if (e.target.id === 'videoModal') closeVideo(); };
 document.getElementById('closeOnboarding').onclick = () => document.getElementById('onboardingModal').classList.add('hidden');
 document.getElementById('onboardingForm').onsubmit = e => {
   e.preventDefault();
@@ -486,7 +543,6 @@ document.getElementById('onboardingForm').onsubmit = e => {
   document.getElementById('onboardingModal').classList.add('hidden');
   render();
 };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
 
 /* ---------------- start ---------------- */
 matrix();

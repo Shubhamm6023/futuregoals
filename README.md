@@ -20,8 +20,8 @@ Push to `main` → GitHub Actions deploys to
    `appVersionCode`).
 2. Push a tag:
    ```bash
-   git tag v3.0.0
-   git push origin v3.0.0
+   git tag v3.1.0
+   git push origin v3.1.0
    ```
 3. The **Android Release** workflow builds a **signed** APK + AAB with
    Bubblewrap and creates a GitHub Release with both files attached.
