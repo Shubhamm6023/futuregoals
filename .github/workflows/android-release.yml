@@ -54,13 +54,28 @@ jobs:
               || echo "(issue creation failed — check the run Summary tab)"
             exit 1
           }
-          docker run --rm -v "$PWD/android:/app" -w /app \
-            -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
-            ghcr.io/googlechromelabs/bubblewrap:latest update --skipVersionUpgrade 2>&1 | tee bw.log \
+          # The container has no TTY, so sdkmanager's "Accept? (y/N)" prompt gets
+          # EOF and skips new SDK packages (build-tools 35/36, android-36), which
+          # then fails Gradle. Pre-seed the standard license-hash files instead,
+          # and pipe `yes` to answer any other leftover prompt.
+          run_in_container() { # $@ = bubblewrap subcommand + args
+            docker run --rm -i -v "$PWD/android:/app" -w /app \
+              -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
+              --entrypoint sh ghcr.io/googlechromelabs/bubblewrap:latest -c '
+                SDK_DIR="${ANDROID_HOME:-/root/.bubblewrap/android_sdk}"
+                mkdir -p "$SDK_DIR/licenses"
+                printf "%s\n" 8933bad161af4178b1185d1a37fbf41ea5269c55 \
+                  d56f5187479451eabf01fb78af6dfcb131a6481e \
+                  24333f8a63b6825ea9c5514f83c2829b004d1fee \
+                  > "$SDK_DIR/licenses/android-sdk-license"
+                printf "%s\n" 84831b9409646a918e30573bab4c7c9a4b584b9f \
+                  > "$SDK_DIR/licenses/android-sdk-preview-license"
+                yes | bubblewrap "$@"
+              ' sh "$@"
+          }
+          run_in_container update --skipVersionUpgrade 2>&1 | tee bw.log \
             || report "bubblewrap update"
-          docker run --rm -v "$PWD/android:/app" -w /app \
-            -e BUBBLEWRAP_KEYSTORE_PASSWORD -e BUBBLEWRAP_KEY_PASSWORD \
-            ghcr.io/googlechromelabs/bubblewrap:latest build --skipPwaValidation 2>&1 | tee bw.log \
+          run_in_container build --skipPwaValidation 2>&1 | tee bw.log \
             || report "bubblewrap build"
 
       - name: List build outputs
