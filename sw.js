@@ -1,4 +1,4 @@
-const CACHE = 'future-v6';
+const CACHE = 'future-v7';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {

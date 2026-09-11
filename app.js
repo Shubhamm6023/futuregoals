@@ -1,24 +1,151 @@
 /* ============================================================
    FUTURE — hacker-style learning roadmap PWA
    Built for SHUBHAM RAO · every topic in one learning page
+
+   File map (in order):
+     1. Content data (topics, Hindi videos, quizzes, practice, jobs)
+     2. State + tiny helpers
+     3. Utilities (YouTube links, sound, toast)
+     4. Live wallpaper + boot splash
+     5. Navigation + layout helpers
+     6. Views (home, roadmap, learn, ai, jobs, projects, profile)
+     7. Future AI (GPT via Puter.js + offline fallback brain)
+     8. Visual effects (3D tilt)
+     9. Actions (quiz picks, buttons)
+    10. Render + global bindings + start
    ============================================================ */
 
+/* ==================== 1. CONTENT DATA ==================== */
+
+/* Each topic: [title, tag, description, video, channel, url,
+                easy notes, code example] */
 const topics = [
-  ['C Programming Basics', 'Start here', 'Learn variables, decisions, loops, and the way code thinks.', 'C Programming Tutorial for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=KJgsSFOSQv0', 'C teaches the building blocks of programming. A program is a clear set of instructions.', '#include <stdio.h>\nint main() {\n  printf("Hello, Future!");\n  return 0;\n}'],
-  ['Python', 'Core skill', 'Use a friendly language to automate tasks and build useful apps.', 'Python Tutorial for Beginners', 'Programming with Mosh', 'https://www.youtube.com/watch?v=_uQrJ0TkZlc', 'Python reads almost like English. Store information, then use functions to reuse your ideas.', 'name = "Shubham"\ndef greet(person):\n  return f"Hello, {person}!"\nprint(greet(name))'],
-  ['SQL', 'Core skill', 'Ask useful questions of data with simple database queries.', 'SQL Tutorial - Full Database Course', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=HXV3zeQKqGY', 'SQL is how you ask a database for information. You say what you need; the database finds it.', 'SELECT name, email\nFROM students\nWHERE active = true;'],
-  ['HTML & CSS', 'Web foundations', 'Build clear web pages, then style interfaces people enjoy.', 'HTML & CSS Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=G3e-cpL7ofc', 'HTML gives a page structure. CSS gives it its visual style. Together they create web pages.', '<button class="primary">Start learning</button>\n.primary { background: #c4f36b; }'],
-  ['JavaScript', 'Web foundations', 'Make web pages react to people with interaction and logic.', 'JavaScript Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=PkZNo7MFNFg', 'JavaScript listens for an action, does some work, and updates the page.', 'button.addEventListener("click", () => {\n  alert("You did it!");\n});'],
-  ['Flask', 'Backend', 'Build lightweight web app with Python and turn ideas into real websites.', 'Learn Flask for Python - Full Tutorial', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=Z1RJmh_OqeA', 'Flask is a tiny Python tool that turns your code into a website. You write a function for each page, and Flask sends it to the browser.', 'from flask import Flask\napp = Flask(__name__)\n\n@app.route("/")\ndef home():\n    return "Hello, Future!"\n\nif __name__ == "__main__":\n    app.run(debug=True)'],
-  ['Django', 'Backend', 'A full-featured Python framework for building complete, secure web apps.', 'Python Django Web Framework - Full Course for Beginners', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=F5mRW0jo-U4', 'Django gives you everything a website needs — pages, login, and a database — already wired together, so you focus on your app.', 'pip install django\ndjango-admin startproject mysite .\npython manage.py startapp tasks\npython manage.py runserver'],
-  ['Git & GitHub', 'Workflow', 'Save your work safely and share it like a professional.', 'Git and GitHub for Beginners', 'Khan Academy', 'https://www.youtube.com/watch?v=RGOj5yH7evk', 'Git remembers versions of your project. GitHub is the online home where you back it up.', 'git add .\ngit commit -m "Add homepage"\ngit push origin main'],
-  ['DSA', 'Interview skill', 'Train your problem-solving muscles for coding interviews.', 'Data Structures and Algorithms', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=8hly31xKli0', 'Data structures organize information. Algorithms are repeatable steps that solve a problem.', 'const largest = Math.max(...numbers);'],
-  ['Projects', 'Portfolio', 'Turn knowledge into proof with a portfolio you can share.', 'How to Build Projects as a Beginner', 'Ali Abdaal', 'https://www.youtube.com/watch?v=0NgG5XQz5GQ', 'A strong beginner project solves one small problem and clearly shows what you learned.', 'Project: Study timer\nGoal: help learners focus'],
-  ['AI Integration', 'Future skill', 'Add useful AI features to things you build.', 'Build AI Apps with Python', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=0lOSvOoF2to', 'AI can help an app understand text or give an answer. Give it clear context and check the output.', 'Prompt: "Explain SQL joins in 3 simple lines."'],
-  ['Job Preparation', 'Career', 'Practice the skills and stories that help you get interviews.', 'How to Prepare for Coding Interviews', 'NeetCode', 'https://www.youtube.com/watch?v=KLlKcW1lW5A', 'Job preparation is a weekly rhythm of building, practicing, applying, and improving.', 'Built a task tracker using Flask + SQL.']
+  [
+    'C Programming Basics', 'Start here',
+    'Learn variables, decisions, loops, and the way code thinks.',
+    'C Programming Tutorial for Beginners', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=KJgsSFOSQv0',
+    'C teaches the building blocks of programming. A program is a clear set of instructions.',
+    `#include <stdio.h>
+int main() {
+  printf("Hello, Future!");
+  return 0;
+}`
+  ],
+  [
+    'Python', 'Core skill',
+    'Use a friendly language to automate tasks and build useful apps.',
+    'Python Tutorial for Beginners', 'Programming with Mosh',
+    'https://www.youtube.com/watch?v=_uQrJ0TkZlc',
+    'Python reads almost like English. Store information, then use functions to reuse your ideas.',
+    `name = "Shubham"
+def greet(person):
+  return f"Hello, {person}!"
+print(greet(name))`
+  ],
+  [
+    'SQL', 'Core skill',
+    'Ask useful questions of data with simple database queries.',
+    'SQL Tutorial - Full Database Course', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=HXV3zeQKqGY',
+    'SQL is how you ask a database for information. You say what you need; the database finds it.',
+    `SELECT name, email
+FROM students
+WHERE active = true;`
+  ],
+  [
+    'HTML & CSS', 'Web foundations',
+    'Build clear web pages, then style interfaces people enjoy.',
+    'HTML & CSS Full Course for Beginners', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=G3e-cpL7ofc',
+    'HTML gives a page structure. CSS gives it its visual style. Together they create web pages.',
+    `<button class="primary">Start learning</button>
+.primary { background: #c4f36b; }`
+  ],
+  [
+    'JavaScript', 'Web foundations',
+    'Make web pages react to people with interaction and logic.',
+    'JavaScript Full Course for Beginners', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=PkZNo7MFNFg',
+    'JavaScript listens for an action, does some work, and updates the page.',
+    `button.addEventListener("click", () => {
+  alert("You did it!");
+});`
+  ],
+  [
+    'Flask', 'Backend',
+    'Build lightweight web app with Python and turn ideas into real websites.',
+    'Learn Flask for Python - Full Tutorial', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=Z1RJmh_OqeA',
+    'Flask is a tiny Python tool that turns your code into a website. You write a function for each page, and Flask sends it to the browser.',
+    `from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Future!"
+
+if __name__ == "__main__":
+    app.run(debug=True)`
+  ],
+  [
+    'Django', 'Backend',
+    'A full-featured Python framework for building complete, secure web apps.',
+    'Python Django Web Framework - Full Course for Beginners', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=F5mRW0jo-U4',
+    'Django gives you everything a website needs — pages, login, and a database — already wired together, so you focus on your app.',
+    `pip install django
+django-admin startproject mysite .
+python manage.py startapp tasks
+python manage.py runserver`
+  ],
+  [
+    'Git & GitHub', 'Workflow',
+    'Save your work safely and share it like a professional.',
+    'Git and GitHub for Beginners', 'Khan Academy',
+    'https://www.youtube.com/watch?v=RGOj5yH7evk',
+    'Git remembers versions of your project. GitHub is the online home where you back it up.',
+    `git add .
+git commit -m "Add homepage"
+git push origin main`
+  ],
+  [
+    'DSA', 'Interview skill',
+    'Train your problem-solving muscles for coding interviews.',
+    'Data Structures and Algorithms', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=8hly31xKli0',
+    'Data structures organize information. Algorithms are repeatable steps that solve a problem.',
+    `const largest = Math.max(...numbers);`
+  ],
+  [
+    'Projects', 'Portfolio',
+    'Turn knowledge into proof with a portfolio you can share.',
+    'How to Build Projects as a Beginner', 'Ali Abdaal',
+    'https://www.youtube.com/watch?v=0NgG5XQz5GQ',
+    'A strong beginner project solves one small problem and clearly shows what you learned.',
+    `Project: Study timer
+Goal: help learners focus`
+  ],
+  [
+    'AI Integration', 'Future skill',
+    'Add useful AI features to things you build.',
+    'Build AI Apps with Python', 'freeCodeCamp.org',
+    'https://www.youtube.com/watch?v=0lOSvOoF2to',
+    'AI can help an app understand text or give an answer. Give it clear context and check the output.',
+    `Prompt: "Explain SQL joins in 3 simple lines."`
+  ],
+  [
+    'Job Preparation', 'Career',
+    'Practice the skills and stories that help you get interviews.',
+    'How to Prepare for Coding Interviews', 'NeetCode',
+    'https://www.youtube.com/watch?v=KLlKcW1lW5A',
+    'Job preparation is a weekly rhythm of building, practicing, applying, and improving.',
+    `Built a task tracker using Flask + SQL.`
+  ]
 ];
 
-/* Hindi / Hinglish videos (Code with Harry, Apna College, WsCube Tech) */
+/* Hindi / Hinglish videos (Code with Harry, Apna College, WsCube Tech).
+   Same order as topics above. Each: [title, channel, url] */
 const hindiVideos = [
   ['C Language Full Course in Hindi', 'Code with Harry', 'https://www.youtube.com/watch?v=ZSPZob_1TOk'],
   ['Complete Python Course in Hindi', 'Code with Harry', 'https://www.youtube.com/watch?v=ihk_Xglr164'],
@@ -34,59 +161,180 @@ const hindiVideos = [
   ['Placement & Internship Prep Strategy', 'Apna College', 'https://www.youtube.com/watch?v=i3y8Xl_BFPA']
 ];
 
-/* 2 real MCQs per topic: {q, opts[4], a (correct index), why} */
+/* 2 real MCQs per topic: {q, opts[4], a (correct index), why}.
+   Outer index matches the topic order above. */
 const quizzes = [
   [
-    { q: 'What does printf("Hello") do?', opts: ['It prints text to the screen', 'It reads input from the user', 'It creates a new file', 'It starts an infinite loop'], a: 0, why: 'printf means "print formatted" — it shows text on the screen.' },
-    { q: 'Which line usually ends a main() function in C?', opts: ['return 0;', 'print "done";', 'exit main;', 'stop;'], a: 0, why: 'return 0; tells the system the program finished successfully.' }
+    {
+      q: 'What does printf("Hello") do?',
+      opts: ['It prints text to the screen', 'It reads input from the user', 'It creates a new file', 'It starts an infinite loop'],
+      a: 0,
+      why: 'printf means "print formatted" — it shows text on the screen.'
+    },
+    {
+      q: 'Which line usually ends a main() function in C?',
+      opts: ['return 0;', 'print "done";', 'exit main;', 'stop;'],
+      a: 0,
+      why: 'return 0; tells the system the program finished successfully.'
+    }
   ],
   [
-    { q: 'In Python, name = "Shubham" creates a...', opts: ['variable that stores text', 'loop', 'function', 'database'], a: 0, why: 'A variable is a labelled box that stores a value — here, the text "Shubham".' },
-    { q: 'What does def greet(person): do?', opts: ['defines a reusable function named greet', 'prints "person"', 'deletes a variable', 'starts a loop'], a: 0, why: 'def creates a function you can call many times with different names.' }
+    {
+      q: 'In Python, name = "Shubham" creates a...',
+      opts: ['variable that stores text', 'loop', 'function', 'database'],
+      a: 0,
+      why: 'A variable is a labelled box that stores a value — here, the text "Shubham".'
+    },
+    {
+      q: 'What does def greet(person): do?',
+      opts: ['defines a reusable function named greet', 'prints "person"', 'deletes a variable', 'starts a loop'],
+      a: 0,
+      why: 'def creates a function you can call many times with different names.'
+    }
   ],
   [
-    { q: 'In SELECT name FROM students WHERE active = true — what filters the data?', opts: ['WHERE active = true', 'SELECT name', 'FROM students', 'the semicolon'], a: 0, why: 'WHERE sets the condition — only rows where active is true come back.' },
-    { q: 'SELECT * FROM students returns...', opts: ['every column of every student row', 'only the first student', 'only names', 'nothing at all'], a: 0, why: '* means "all columns", so you get every student with all their details.' }
+    {
+      q: 'In SELECT name FROM students WHERE active = true — what filters the data?',
+      opts: ['WHERE active = true', 'SELECT name', 'FROM students', 'the semicolon'],
+      a: 0,
+      why: 'WHERE sets the condition — only rows where active is true come back.'
+    },
+    {
+      q: 'SELECT * FROM students returns...',
+      opts: ['every column of every student row', 'only the first student', 'only names', 'nothing at all'],
+      a: 0,
+      why: '* means "all columns", so you get every student with all their details.'
+    }
   ],
   [
-    { q: '<button>Start</button> is an example of...', opts: ['an HTML element', 'a CSS rule', 'a JavaScript function', 'a database query'], a: 0, why: 'Tags like <button> build the structure of a page — that is HTML.' },
-    { q: 'What does background: #c4f36b; do in CSS?', opts: ['sets the background color of an element', 'changes the font size', 'adds a border', 'moves the element'], a: 0, why: 'background sets the color behind an element. #c4f36b is a hex color — the lime used in Future.' }
+    {
+      q: '<button>Start</button> is an example of...',
+      opts: ['an HTML element', 'a CSS rule', 'a JavaScript function', 'a database query'],
+      a: 0,
+      why: 'Tags like <button> build the structure of a page — that is HTML.'
+    },
+    {
+      q: 'What does background: #c4f36b; do in CSS?',
+      opts: ['sets the background color of an element', 'changes the font size', 'adds a border', 'moves the element'],
+      a: 0,
+      why: 'background sets the color behind an element. #c4f36b is a hex color — the lime used in Future.'
+    }
   ],
   [
-    { q: 'What does addEventListener("click", fn) do?', opts: ['waits for a click and then runs fn', 'clicks the button automatically', 'stops all clicks', 'changes the page color'], a: 0, why: 'It listens for the click event and runs your function when it happens.' },
-    { q: 'What does alert("Hi") show?', opts: ['a popup message on screen', 'a new web page', 'the console', 'a file download'], a: 0, why: 'alert opens a small popup box with the message inside.' }
+    {
+      q: 'What does addEventListener("click", fn) do?',
+      opts: ['waits for a click and then runs fn', 'clicks the button automatically', 'stops all clicks', 'changes the page color'],
+      a: 0,
+      why: 'It listens for the click event and runs your function when it happens.'
+    },
+    {
+      q: 'What does alert("Hi") show?',
+      opts: ['a popup message on screen', 'a new web page', 'the console', 'a file download'],
+      a: 0,
+      why: 'alert opens a small popup box with the message inside.'
+    }
   ],
   [
-    { q: 'What does @app.route("/") connect?', opts: ['the URL "/" to a Python function', 'Python to the database', 'two functions together', 'a file to a folder'], a: 0, why: 'The decorator tells Flask which function to run when someone visits that URL.' },
-    { q: 'app.run(debug=True) does what?', opts: ['starts the dev server so you can open the site', 'installs Flask', 'creates a database', 'compiles C code'], a: 0, why: 'It launches the local server; debug=True shows helpful errors while you build.' }
+    {
+      q: 'What does @app.route("/") connect?',
+      opts: ['the URL "/" to a Python function', 'Python to the database', 'two functions together', 'a file to a folder'],
+      a: 0,
+      why: 'The decorator tells Flask which function to run when someone visits that URL.'
+    },
+    {
+      q: 'app.run(debug=True) does what?',
+      opts: ['starts the dev server so you can open the site', 'installs Flask', 'creates a database', 'compiles C code'],
+      a: 0,
+      why: 'It launches the local server; debug=True shows helpful errors while you build.'
+    }
   ],
   [
-    { q: 'python manage.py runserver...', opts: ['starts Django\'s development server', 'deletes the project', 'installs Python', 'uploads to GitHub'], a: 0, why: 'runserver starts a local web server so you can see your site in the browser.' },
-    { q: 'django-admin startproject mysite . does what?', opts: ['creates a new Django project in the current folder', 'runs the website', 'creates a database table', 'logs you in'], a: 0, why: 'It generates the project files (settings, urls and more) in the current directory.' }
+    {
+      q: 'python manage.py runserver...',
+      opts: ['starts Django\'s development server', 'deletes the project', 'installs Python', 'uploads to GitHub'],
+      a: 0,
+      why: 'runserver starts a local web server so you can see your site in the browser.'
+    },
+    {
+      q: 'django-admin startproject mysite . does what?',
+      opts: ['creates a new Django project in the current folder', 'runs the website', 'creates a database table', 'logs you in'],
+      a: 0,
+      why: 'It generates the project files (settings, urls and more) in the current directory.'
+    }
   ],
   [
-    { q: 'git commit -m "Add homepage" saves...', opts: ['a version of your work with a message', 'your password', 'only deleted files', 'the internet connection'], a: 0, why: 'A commit is a saved checkpoint; the -m message explains what changed.' },
-    { q: 'git push origin main does what?', opts: ['uploads your commits to GitHub', 'deletes the repo', 'switches the theme', 'starts a server'], a: 0, why: 'push sends your local commits to the online repository so they are backed up.' }
+    {
+      q: 'git commit -m "Add homepage" saves...',
+      opts: ['a version of your work with a message', 'your password', 'only deleted files', 'the internet connection'],
+      a: 0,
+      why: 'A commit is a saved checkpoint; the -m message explains what changed.'
+    },
+    {
+      q: 'git push origin main does what?',
+      opts: ['uploads your commits to GitHub', 'deletes the repo', 'switches the theme', 'starts a server'],
+      a: 0,
+      why: 'push sends your local commits to the online repository so they are backed up.'
+    }
   ],
   [
-    { q: 'What is a data structure?', opts: ['a way to organize data so it is easy to use', 'a programming language', 'a web browser', 'a type of error'], a: 0, why: 'Structures like arrays, lists and stacks decide how data is stored and accessed.' },
-    { q: 'Math.max(...numbers) returns...', opts: ['the largest number in the array', 'the smallest number', 'the total sum', 'the first number'], a: 0, why: 'Math.max finds the biggest value; the ... spread passes all array items.' }
+    {
+      q: 'What is a data structure?',
+      opts: ['a way to organize data so it is easy to use', 'a programming language', 'a web browser', 'a type of error'],
+      a: 0,
+      why: 'Structures like arrays, lists and stacks decide how data is stored and accessed.'
+    },
+    {
+      q: 'Math.max(...numbers) returns...',
+      opts: ['the largest number in the array', 'the smallest number', 'the total sum', 'the first number'],
+      a: 0,
+      why: 'Math.max finds the biggest value; the ... spread passes all array items.'
+    }
   ],
   [
-    { q: 'What makes a strong beginner project?', opts: ['it solves one small real problem', 'it has the most lines of code', 'copies a big app exactly', 'it never has bugs'], a: 0, why: 'A focused, finished small project teaches more and is easy to explain.' },
-    { q: 'What should you do first when starting a project?', opts: ['plan the smallest version you can finish', 'buy a domain name', 'write 1000 lines first', 'skip the plan and code everything'], a: 0, why: 'Start with the smallest useful version, finish it, then add features one at a time.' }
+    {
+      q: 'What makes a strong beginner project?',
+      opts: ['it solves one small real problem', 'it has the most lines of code', 'copies a big app exactly', 'it never has bugs'],
+      a: 0,
+      why: 'A focused, finished small project teaches more and is easy to explain.'
+    },
+    {
+      q: 'What should you do first when starting a project?',
+      opts: ['plan the smallest version you can finish', 'buy a domain name', 'write 1000 lines first', 'skip the plan and code everything'],
+      a: 0,
+      why: 'Start with the smallest useful version, finish it, then add features one at a time.'
+    }
   ],
   [
-    { q: 'A good AI prompt is...', opts: ['clear, specific and gives context', 'one vague word', 'a random question', 'a list of complaints'], a: 0, why: 'Clear prompts — with the goal and format — give much better AI answers.' },
-    { q: 'Why should you check AI output before using it?', opts: ['AI can make mistakes or give wrong facts', 'AI always breaks the internet', 'it is too slow otherwise', 'nobody checks it'], a: 0, why: 'AI is helpful but not perfect — always verify important facts and test the code.' }
+    {
+      q: 'A good AI prompt is...',
+      opts: ['clear, specific and gives context', 'one vague word', 'a random question', 'a list of complaints'],
+      a: 0,
+      why: 'Clear prompts — with the goal and format — give much better AI answers.'
+    },
+    {
+      q: 'Why should you check AI output before using it?',
+      opts: ['AI can make mistakes or give wrong facts', 'AI always breaks the internet', 'it is too slow otherwise', 'nobody checks it'],
+      a: 0,
+      why: 'AI is helpful but not perfect — always verify important facts and test the code.'
+    }
   ],
   [
-    { q: 'What helps most before an interview?', opts: ['practising explaining your project aloud', 'memorizing answers word-for-word', 'ignoring your resume', 'sending blank applications'], a: 0, why: 'Clear, practised stories about your projects make you memorable and confident.' },
-    { q: 'What is a good weekly job-prep rhythm?', opts: ['build one thing, solve 3 problems, improve one application', 'study 12 hours once a month', 'wait for recruiters to find you', 'only watch videos, never apply'], a: 0, why: 'Small consistent actions — building, practising, applying — beat rare bursts of effort.' }
+    {
+      q: 'What helps most before an interview?',
+      opts: ['practising explaining your project aloud', 'memorizing answers word-for-word', 'ignoring your resume', 'sending blank applications'],
+      a: 0,
+      why: 'Clear, practised stories about your projects make you memorable and confident.'
+    },
+    {
+      q: 'What is a good weekly job-prep rhythm?',
+      opts: ['build one thing, solve 3 problems, improve one application', 'study 12 hours once a month', 'wait for recruiters to find you', 'only watch videos, never apply'],
+      a: 0,
+      why: 'Small consistent actions — building, practising, applying — beat rare bursts of effort.'
+    }
   ]
 ];
 
-/* One hands-on practice task per topic */
+/* One hands-on practice task per topic (order matches topics). */
 const practices = [
   'Write a small C program that prints your name 5 times using a loop.',
   'Make a Python function that greets any name you give it, then call it twice.',
@@ -102,6 +350,7 @@ const practices = [
   'Write a 2-line answer to: "Tell me about your latest project."'
 ];
 
+/* Job-prep videos. 0–3 English, 4+ Hindi (Apna College). Each: [title, channel, url] */
 const jobVideos = [
   ['Build a developer resume', 'Jeff Su', 'https://www.youtube.com/watch?v=Tt08KmFfIYQ'],
   ['GitHub profile that gets noticed', 'ForrestKnight', 'https://www.youtube.com/watch?v=BWyQbnG5z0E'],
@@ -112,7 +361,20 @@ const jobVideos = [
   ['Off-campus referrals from top companies', 'Apna College', 'https://www.youtube.com/watch?v=rDTt8DcUtOY']
 ];
 
-let state = { name: 'Student', completed: [], theme: 'dark', wall: 'orbs', sound: true, onboarded: false, streak: 4, quizPass: [], practice: [], ...JSON.parse(localStorage.getItem('futureState') || '{}') };
+/* ==================== 2. STATE + HELPERS ==================== */
+
+let state = {
+  name: 'Student',
+  completed: [],
+  theme: 'dark',
+  wall: 'orbs',
+  sound: true,
+  onboarded: false,
+  streak: 4,
+  quizPass: [],
+  practice: [],
+  ...JSON.parse(localStorage.getItem('futureState') || '{}')
+};
 state.completed = [...new Set(state.completed.filter(i => Number.isInteger(i) && i >= 0 && i < topics.length))];
 state.quizPass = Array.isArray(state.quizPass) ? state.quizPass : [];
 state.practice = Array.isArray(state.practice) ? state.practice : [];
@@ -123,7 +385,9 @@ const save = () => localStorage.setItem('futureState', JSON.stringify(state));
 const pct = () => Math.round(state.completed.length / topics.length * 100);
 const h = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
-/* ---------------- smooth YouTube link (opens in the app on phones) ---------------- */
+/* ==================== 3. UTILITIES ==================== */
+
+/* Smooth YouTube link (opens in the app on phones). */
 function ytLink(url) {
   try {
     const u = new URL(url);
@@ -132,12 +396,13 @@ function ytLink(url) {
     return 'https://www.youtube.com' + u.pathname;
   } catch (e) { return url; }
 }
+
 function openVideo(url) {
   window.open(ytLink(url), '_blank', 'noopener');
   tone();
 }
 
-/* ---------------- sound ---------------- */
+/* Small square-wave UI sound. */
 function tone(up, freq, gain) {
   if (!state.sound || !window.AudioContext) return;
   try {
@@ -149,13 +414,16 @@ function tone(up, freq, gain) {
     o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + 0.12);
   } catch (e) { /* audio not available */ }
 }
+
 function toast(x, up) {
   let t = document.getElementById('toast');
   t.textContent = x; t.classList.add('show'); tone(up);
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-/* ---------------- matrix live wallpaper ---------------- */
+/* ==================== 4. WALLPAPER + BOOT ==================== */
+
+/* Matrix rain live wallpaper on the fixed background canvas. */
 function matrix() {
   const cv = document.getElementById('matrix');
   if (!cv || !cv.getContext) return;
@@ -183,7 +451,7 @@ function matrix() {
   }, 50);
 }
 
-/* ---------------- aesthetic logo splash (replaces terminal boot) ---------------- */
+/* Logo splash; hides itself after 1.5 s or on tap, then runs done(). */
 function boot(done) {
   const ov = document.getElementById('boot');
   if (!ov) { done && done(); return; }
@@ -198,12 +466,14 @@ function boot(done) {
   setTimeout(close, 1500);
 }
 
-/* ---------------- navigation / actions ---------------- */
+/* ==================== 5. NAVIGATION + LAYOUT HELPERS ==================== */
+
 function nav() {
   document.querySelectorAll('[data-view]').forEach(x => x.onclick = () => { view = x.dataset.view; document.querySelector('.sidebar').classList.remove('open'); render(); });
   document.querySelectorAll('[data-topic]').forEach(x => x.onclick = () => { topic = +x.dataset.topic; view = 'learn'; render(); });
   document.querySelectorAll('[data-action]').forEach(x => x.onclick = () => act(x.dataset.action, x));
 }
+
 function wrap(title, html) {
   document.getElementById('breadcrumb').textContent = 'Future / ' + title;
   app.innerHTML = '<section class="view">' + html + '</section>';
@@ -212,12 +482,16 @@ function wrap(title, html) {
   app.classList.add('view-in');
   nav();
 }
+
 function coach() {
   return '<div class="coach-card"><div class="coach-icon">✺</div><div><span>FUTURE AI • YOUR STUDY COMPANION</span><strong>Need a simple explanation?</strong><p>Ask me about any topic, an MCQ, practice, or your job preparation plan.</p><button class="text-button" data-view="ai">Ask Future AI →</button></div></div>';
 }
+
 function onePlace() {
   return '<div class="one-place"><span>🎬 Best videos</span><span>🇮🇳 Hindi videos</span><span>📝 Easy notes</span><span>🧩 MCQs</span><span>✏️ Practice</span></div>';
 }
+
+/* ==================== 6. VIEWS ==================== */
 
 function home() {
   let t = topics[topic];
@@ -225,11 +499,13 @@ function home() {
     '<div class="grid stats-grid"><div class="card"><div class="stat-label">Learning progress</div><div class="stat-value">' + pct() + '<span>%</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct() + '%"></div></div></div><div class="card"><div class="stat-label">Learning streak</div><div class="stat-value">' + state.streak + '<span> days</span></div><p class="stat-label">Keep your rhythm alive.</p></div><div class="card"><div class="stat-label">Topics completed</div><div class="stat-value">' + state.completed.length + '<span> / ' + topics.length + '</span></div><p class="stat-label">Small wins add up.</p></div></div>' +
     '<div class="next-lesson card"><div><span class="tag">YOUR NEXT LESSON</span><h2>' + t[0] + '</h2><p>' + t[2] + '</p></div><button class="primary-button" data-action="continue">Continue →</button></div>' + coach();
 }
+
 function roadmap() {
   return '<div class="page-intro"><div class="eyebrow">YOUR FULL PATH</div><h1>Choose a topic. Learn it all in one place.</h1><p>Every topic opens a dedicated page with video, Hindi video, notes, example, MCQs, and practice.</p></div><div class="topic-grid">' +
     topics.map((t, i) => '<button class="topic-card ' + (state.completed.includes(i) ? 'complete' : '') + '" data-topic="' + i + '"><span class="topic-number">' + (state.completed.includes(i) ? '✓' : String(i + 1).padStart(2, '0')) + '</span><span class="tag">' + t[1] + '</span><h3>' + t[0] + '</h3><p>' + t[2] + '</p><span class="open-topic">Open lesson →</span></button>').join('') +
     '</div>';
 }
+
 function quizHTML(i) {
   return quizzes[i].map((q, k) => {
     const passed = state.quizPass.includes(i + '-' + k);
@@ -238,6 +514,7 @@ function quizHTML(i) {
       '</div><p class="quiz-feedback" data-fb="' + i + '-' + k + '"></p></div>';
   }).join('');
 }
+
 function learn() {
   let t = topics[topic], done = state.completed.includes(topic), pracDone = state.practice.includes(topic), hv = hindiVideos[topic];
   return '<div class="lesson-top"><button class="back-link" data-view="roadmap">← All topics</button><div class="eyebrow">LESSON ' + String(topic + 1).padStart(2, '0') + ' · ' + t[1].toUpperCase() + '</div><h1>' + t[0] + '</h1><p>' + t[2] + '</p></div>' + onePlace() +
@@ -252,9 +529,11 @@ function learn() {
     '<section class="lesson-block practice-card" id="practice"><span class="tag">✏️ PRACTICE</span><h2>Now make it yours.</h2><div class="practice-task' + (pracDone ? ' practice-done' : '') + '"><span class="task-num">' + (pracDone ? '✓' : '▶') + '</span><div><p><strong>Task:</strong> ' + h(practices[topic]) + '</p>' + (pracDone ? '<p>Done — great work!</p>' : '<p>Try it in 10 minutes. Finished? Mark it below.</p>') + '</div></div><button class="secondary-button" data-action="practice" style="margin-top:14px">' + (pracDone ? 'Practiced ✓' : 'Mark as practiced') + '</button></section>' +
     '</div></div>';
 }
+
 function ai() {
   return '<div class="ai-page"><div class="page-intro"><div class="eyebrow">FUTURE AI · POWERED BY GPT</div><h1>Ask anything. I think it through and answer right.</h1><p>Homework, coding, math, logic puzzles, general knowledge, career — ask me ANY question in English or Hinglish. I think step by step, verify my logic, and explain the right answer simply.</p></div><div class="ai-shell"><div class="ai-head"><div class="ai-spark">✺</div><div><strong>Future AI</strong><span>GPT-powered · logical thinking · answers anything</span></div><button class="text-button ai-clear" id="clearChat">↺ New chat</button></div><div class="ai-chat" id="aiChat"><div class="ai-message">Namaste ' + h(state.name) + '! ✺ I am Future AI, powered by GPT. Ask me any question — like "A bat and ball cost ₹110, the bat costs ₹100 more than the ball, what does the ball cost?" or "Explain Python simply". I reason step by step and give you the right answer.</div></div><div class="quick-prompts"><button data-prompt="How do I use this app?">How to use the app</button><button data-prompt="Explain the current topic simply">Explain current topic</button><button data-prompt="A bat and a ball cost ₹110 together. The bat costs ₹100 more than the ball. How much does the ball cost? Think carefully.">Logic puzzle 🧠</button><button data-prompt="What is the next number in the series 2, 6, 12, 20, 30, ? Explain the pattern.">Number series</button><button data-prompt="Ask me an MCQ">Ask me an MCQ</button><button data-prompt="Make me a 7 day study plan">7 day plan</button></div><form class="ai-form" id="aiForm"><input id="aiInput" placeholder="Ask Future AI anything..." autocomplete="off"><button class="primary-button">Send →</button></form></div></div>';
 }
+
 function jobs() {
   return '<div class="page-intro"><div class="eyebrow">FROM LEARNING TO OPPORTUNITY</div><h1>Get job ready, one practical step at a time.</h1><p>Build proof of your skills, tell your story clearly, and practice before interviews.</p></div><div class="job-banner"><div><span class="tag">START HERE</span><h2>Your weekly job-prep routine</h2><p>Build one update · solve 3 problems · improve one application · ask for feedback.</p></div><button class="primary-button" data-view="ai">Ask Future AI for a plan</button></div><h2 class="section-heading">Best job-prep videos — English</h2><div class="job-video-grid">' +
     jobVideos.slice(0, 4).map((v, i) => '<article class="job-video"><i class="glare"></i><div class="job-play">▶</div><div><span class="tag">YOUTUBE</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · beginner-friendly</p><button class="text-button" data-action="job-video" data-index="' + i + '">Watch now ↗</button></div></article>').join('') +
@@ -262,17 +541,22 @@ function jobs() {
     jobVideos.slice(4).map((v, i) => '<article class="job-video"><i class="glare"></i><div class="job-play">▶</div><div><span class="tag">YOUTUBE · HINDI</span><h3>' + v[0] + '</h3><p>' + v[1] + ' · placement guidance in Hindi</p><button class="text-button" data-action="job-video" data-index="' + (i + 4) + '">Watch now ↗</button></div></article>').join('') +
     '</div><h2 class="section-heading">Your application checklist</h2><div class="check-grid"><div class="check-item"><span>✓</span>Resume: clear project outcomes</div><div class="check-item"><span>✓</span>GitHub: 2–3 pinned projects</div><div class="check-item"><span>✓</span>LinkedIn: clear student headline</div><div class="check-item"><span>✓</span>Interview: explain your project story</div></div>';
 }
+
 function projects() {
   return '<div class="page-intro"><div class="eyebrow">BUILD YOUR PROOF</div><h1>Projects that tell your story.</h1><p>Start small. Finish it. Explain what you learned.</p></div><div class="project-grid"><article class="project-card card"><span class="tag">PROJECT 01</span><h3>Personal portfolio</h3><p>Show who you are and the work you are proud of.</p><div class="project-tech">HTML · CSS · GitHub</div><button class="secondary-button" data-action="project">View first step →</button></article><article class="project-card card"><span class="tag">PROJECT 02</span><h3>Task tracker</h3><p>Build a small tool that helps a person get organized.</p><div class="project-tech">Python · Flask · SQL</div><button class="secondary-button" data-action="project">View first step →</button></article><article class="project-card card"><span class="tag">PROJECT 03</span><h3>AI study buddy</h3><p>Make a helpful study helper with a focused purpose.</p><div class="project-tech">Python · API · AI</div><button class="secondary-button" data-action="project">View first step →</button></article></div>' + coach();
 }
+
 function profile() {
   return '<div class="page-intro"><div class="eyebrow">YOUR SPACE</div><h1>' + h(state.name) + '’s learning journey.</h1><p>Keep showing up. Every finished topic is progress.</p></div><div class="grid profile-grid"><div class="card"><h3>Roadmap progress</h3><div class="stat-value">' + pct() + '<span>% complete</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct() + '%"></div></div><p class="stat-label" style="margin-top:14px">MCQs passed: ' + state.quizPass.length + ' · Practices done: ' + state.practice.length + ' / ' + topics.length + '</p></div><div class="card"><h3>Experience settings</h3><p class="setting-row">App sounds <button class="secondary-button" data-action="sound">' + (state.sound ? 'On' : 'Off') + '</button></p><p class="setting-row">Theme <button class="secondary-button" data-action="theme">' + (state.theme === 'dark' ? 'Dark' : 'Light') + '</button></p><p class="setting-row">Live wallpaper <button class="secondary-button" data-action="wall">' + (state.wall === 'matrix' ? 'Matrix rain' : state.wall === 'off' ? 'Off' : 'Neon orbs') + '</button></p><button class="text-button" data-action="reset">Reset demo data</button></div></div>';
 }
 
-/* ---------------- Future AI — real GPT via Puter.js ---------------- */
+/* ==================== 7. FUTURE AI ==================== */
+
 let chatHistory = []; /* session memory so follow-up questions work */
 let puterHintShown = false;
+
 const AI_MODELS = ['openai/gpt-5.5', 'google/gemini-3.8-flash', 'deepseek/deepseek-v4-pro'];
+
 const AI_SYSTEM =
   'You are Future AI, a friendly expert tutor inside the FUTURE learning app built for SHUBHAM RAO. ' +
   'You answer ANY question the user asks — coding, math, science, logic puzzles, general knowledge, career, or anything else. ' +
@@ -291,6 +575,8 @@ function aiContext(raw) {
     { role: 'user', content: raw }
   ];
 }
+
+/* Normalize the different shapes Puter may return. */
 function aiText(resp) {
   if (typeof resp === 'string') return resp;
   if (resp && resp.message && resp.message.content) {
@@ -301,6 +587,8 @@ function aiText(resp) {
   if (resp && resp.text) return resp.text;
   return '';
 }
+
+/* Try each model in order until one answers; supports streamed chunks. */
 async function askGPT(raw, onChunk) {
   if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat) throw new Error('Puter not loaded');
   const messages = aiContext(raw);
@@ -327,8 +615,10 @@ async function askGPT(raw, onChunk) {
   throw lastErr || new Error('AI unavailable');
 }
 
-/* ---------------- offline fallback brain ---------------- */
+/* --- Offline fallback brain: answers about the app without the network. --- */
+
 let lastQuiz = null;
+
 function findTopic(x) {
   const map = [
     [/\bc\b|\bc programming/, 0],
@@ -347,6 +637,7 @@ function findTopic(x) {
   for (const [re, i] of map) if (re.test(x)) return i;
   return /(^|[^a-z])job|interview|resume|internship|placement|career/.test(x) ? 11 : null;
 }
+
 function reply(raw) {
   const x = raw.toLowerCase().trim();
   const t = topics[topic];
@@ -413,6 +704,7 @@ function reply(raw) {
   }
   return t[0] + ', simply: ' + t[6] + '\n\nStart by watching the video, then try the example. Want me to ask you an MCQ or give you a practice task?';
 }
+
 async function submit(q) {
   q = q.trim();
   if (!q) return;
@@ -450,7 +742,9 @@ async function submit(q) {
   tone(true);
 }
 
-/* ---------------- 3D tilt on video cards ---------------- */
+/* ==================== 8. VISUAL EFFECTS ==================== */
+
+/* 3D tilt on video cards (pointer devices only). */
 function bindVideoTilt() {
   if (matchMedia('(hover: none)').matches) return;
   document.querySelectorAll('.video-preview, .job-video').forEach(el => {
@@ -471,7 +765,8 @@ function bindVideoTilt() {
   });
 }
 
-/* ---------------- actions ---------------- */
+/* ==================== 9. ACTIONS ==================== */
+
 function quizPick(btn) {
   const parts = btn.dataset.quiz.split('-').map(Number);
   const ti = parts[0], qi = parts[1], oi = parts[2];
@@ -493,6 +788,7 @@ function quizPick(btn) {
     toast('Not quite — re-read the notes above.', false);
   }
 }
+
 function act(a, b) {
   if (a === 'continue') { view = 'learn'; render(); }
   else if (a === 'video') openVideo(topics[topic][5]);
@@ -507,7 +803,8 @@ function act(a, b) {
   else if (a === 'reset') { localStorage.removeItem('futureState'); location.reload(); }
 }
 
-/* ---------------- render ---------------- */
+/* ==================== 10. RENDER + GLOBAL BINDINGS + START ==================== */
+
 function render() {
   document.body.classList.toggle('light', state.theme === 'light');
   document.body.classList.toggle('wall-matrix', state.wall === 'matrix');
@@ -531,7 +828,7 @@ function render() {
   }
 }
 
-/* ---------------- global bindings ---------------- */
+/* Top bar + onboarding bindings. */
 document.getElementById('themeToggle').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
 document.getElementById('soundToggle').onclick = () => { state.sound = !state.sound; save(); render(); };
 document.getElementById('mobileMenu').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
@@ -544,7 +841,7 @@ document.getElementById('onboardingForm').onsubmit = e => {
   render();
 };
 
-/* ---------------- start ---------------- */
+/* Start the app. */
 matrix();
 boot(() => { if (!state.onboarded) setTimeout(() => document.getElementById('onboardingModal').classList.remove('hidden'), 400); });
 render();
