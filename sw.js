@@ -1,4 +1,4 @@
-const CACHE = 'future-v9';
+const CACHE = 'future-v10';
 const ASSETS = [
   './',
   './index.html',

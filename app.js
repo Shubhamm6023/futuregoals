@@ -361,6 +361,19 @@ const jobVideos = [
   ['Off-campus referrals from top companies', 'Apna College', 'https://www.youtube.com/watch?v=rDTt8DcUtOY']
 ];
 
+/* Roadmap Videos: best YouTube videos to become a successful CS
+   engineer in the AI era (English + Hindi). Each: [title, channel, url] */
+const careerVideos = [
+  ['Harvard CS50 – Full Computer Science University Course', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=8mAITcNt710'],
+  ['Machine Learning for Everybody – Full Course', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=i_LwzRVP7bg'],
+  ['Intro to Large Language Models', 'Andrej Karpathy', 'https://www.youtube.com/watch?v=zjkBMFhNj_g'],
+  ["Let's build GPT: from scratch, in code, spelled out", 'Andrej Karpathy', 'https://www.youtube.com/watch?v=kCc8FmEb1nY'],
+  ['Prompt Engineering Tutorial – Master ChatGPT and LLM Responses', 'freeCodeCamp.org', 'https://www.youtube.com/watch?v=_ZvnD73m40o'],
+  ['AI Engineer Complete Roadmap for 2026', 'Apna College', 'https://www.youtube.com/watch?v=t9MJ1gxcJ4w'],
+  ['AI Engineering: A Realistic Roadmap for Beginners', 'DataCamp', 'https://www.youtube.com/watch?v=d_LbQwoWI7I'],
+  ['How to Start AI/ML in 2026', 'Apna College', 'https://www.youtube.com/watch?v=8WzSEikpHk8']
+];
+
 /* ==================== 2. STATE + HELPERS ==================== */
 
 let state = {
@@ -373,11 +386,13 @@ let state = {
   streak: 4,
   quizPass: [],
   practice: [],
+  careerWatched: [],
   ...JSON.parse(localStorage.getItem('futureState') || '{}')
 };
 state.completed = [...new Set(state.completed.filter(i => Number.isInteger(i) && i >= 0 && i < topics.length))];
 state.quizPass = Array.isArray(state.quizPass) ? state.quizPass : [];
 state.practice = Array.isArray(state.practice) ? state.practice : [];
+state.careerWatched = Array.isArray(state.careerWatched) ? state.careerWatched : [];
 
 let view = 'home', topic = 0;
 const app = document.getElementById('app');
@@ -398,7 +413,14 @@ function ytLink(url) {
 }
 
 function openVideo(url) {
-  window.open(ytLink(url), '_blank', 'noopener');
+  const link = ytLink(url);
+  /* In Android TWA / installed PWA window.open with _blank fails, so
+     use location.assign which works everywhere. */
+  if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+    window.location.href = link;
+  } else {
+    window.open(link, '_blank', 'noopener');
+  }
   tone();
 }
 
@@ -466,6 +488,19 @@ function boot(done) {
   setTimeout(close, 1500);
 }
 
+/* Stylish reload: play a quick reboot overlay, then reload the page. */
+function reloadApp(msg) {
+  const ov = document.getElementById('reloadFx');
+  if (!ov) { location.reload(); return; }
+  const p = ov.querySelector('p');
+  if (p && msg) p.textContent = msg;
+  ov.classList.add('show');
+  const bar = ov.querySelector('.reload-bar');
+  if (bar) requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add('fill')));
+  tone(true);
+  setTimeout(() => location.reload(), 1600);
+}
+
 /* ==================== 5. NAVIGATION + LAYOUT HELPERS ==================== */
 
 function nav() {
@@ -504,6 +539,24 @@ function roadmap() {
   return '<div class="page-intro"><div class="eyebrow">YOUR FULL PATH</div><h1>Choose a topic. Learn it all in one place.</h1><p>Every topic opens a dedicated page with video, Hindi video, notes, example, MCQs, and practice.</p></div><div class="topic-grid">' +
     topics.map((t, i) => '<button class="topic-card ' + (state.completed.includes(i) ? 'complete' : '') + '" data-topic="' + i + '"><span class="topic-number">' + (state.completed.includes(i) ? '✓' : String(i + 1).padStart(2, '0')) + '</span><span class="tag">' + t[1] + '</span><h3>' + t[0] + '</h3><p>' + t[2] + '</p><span class="open-topic">Open lesson →</span></button>').join('') +
     '</div>';
+}
+
+/* Roadmap Videos: the AI-era career path page. */
+function career() {
+  const stages = [
+    ['01', 'CS foundations', 'How computers and code really work: CS50, C, Python.'],
+    ['02', 'Build real software', 'Web, backend, Git — ship small projects with your Learning Hub lessons.'],
+    ['03', 'Data + algorithms', 'SQL, DSA and problem solving — the interview language of top companies.'],
+    ['04', 'AI-era skills', 'Machine learning, LLMs, prompt engineering — the tools that multiply your value.']
+  ];
+  return '<div class="page-intro"><div class="eyebrow">THE AI-ERA ROADMAP</div><h1>Best videos to become a successful CS engineer in the AI age.</h1><p>Watch these in order: strong CS foundations first, then machine learning and LLMs. Mark each video watched as you go.</p></div>' +
+    '<div class="stage-grid">' + stages.map(s => '<div class="stage-item"><span class="stage-no">' + s[0] + '</span><div><h3>' + s[1] + '</h3><p>' + s[2] + '</p></div></div>').join('') + '</div>' +
+    '<h2 class="section-heading">🎯 Best AI-era videos on YouTube</h2><div class="job-video-grid">' +
+    careerVideos.map((v, i) => {
+      const seen = state.careerWatched.includes(i);
+      return '<article class="job-video career-video' + (seen ? ' career-done' : '') + '"><i class="glare"></i><div class="job-play">▶</div><div><span class="tag">' + (seen ? '✓ WATCHED' : 'YOUTUBE') + '</span><h3>' + v[0] + '</h3><p>' + v[1] + '</p><div class="career-actions"><button class="text-button" data-action="career-video" data-index="' + i + '">Watch now ↗</button><button class="text-button" data-action="career-toggle" data-index="' + i + '">' + (seen ? 'Unmark' : 'Mark watched') + '</button></div></div></article>';
+    }).join('') +
+    '</div><div class="career-tip">💡 Tip: after each video, complete the matching lesson in your <button class="text-button" data-view="roadmap">Learning Hub</button> — notes, MCQs and practice make it stick.</div>' + coach();
 }
 
 function quizHTML(i) {
@@ -656,7 +709,7 @@ function reply(raw) {
     return 'Namaste ' + state.name + '! ✺ I am Future AI, your study companion. Ask me about any topic, MCQs, practice, or how this app works.';
   }
   if (/how (do i |to )?use|how this app|what can you do|^help$/.test(x)) {
-    return 'Here is how FUTURE works, step by step:\n\n1. ROADMAP — your full 12-topic path.\n2. LEARNING HUB — one page per topic with BEST VIDEO + HINDI VIDEO + EASY NOTES + EXAMPLE + MCQs + PRACTICE.\n3. Ask Future AI — me! I answer about every topic and this app.\n4. PROJECTS — 3 guided projects to build proof.\n5. JOB PREP — best YouTube videos (English + Hindi) and a weekly routine.\n\nTip: use the ☾ button for theme, ♫ for sound, and Profile to change the live wallpaper. Try: "Explain Python simply" or "Ask me an MCQ".';
+    return 'Here is how FUTURE works, step by step:\n\n1. ROADMAP — your full 12-topic path.\n2. LEARNING HUB — one page per topic with BEST VIDEO + HINDI VIDEO + EASY NOTES + EXAMPLE + MCQs + PRACTICE.\n3. Ask Future AI — me! I answer about every topic and this app.\n4. PROJECTS — 3 guided projects to build proof.\n5. JOB PREP — best YouTube videos (English + Hindi) and a weekly routine.\n6. ROADMAP VIDEOS — the AI-era video path: CS50 → ML → LLMs → prompt engineering.\n\nTip: use the ☾ button for theme, ♫ for sound, and Profile to change the live wallpaper. Try: "Explain Python simply" or "Ask me an MCQ".';
   }
   if (ti != null) {
     if (ti === 11) {
@@ -683,6 +736,9 @@ function reply(raw) {
   if (/hindi|hinglish|urdu/.test(x)) {
     const hv = hindiVideos[topic];
     return hv ? 'Yes! Every topic has a Hindi / Hinglish video.\n\n🇮🇳 ' + hv[0] + ' by ' + hv[1] + '.\n\nOpen the LEARNING HUB and press "Play Hindi" to watch it on YouTube.' : 'Open any lesson — each one has a Hindi video from Code with Harry or Apna College.';
+  }
+  if (/roadmap videos?|career videos?|ai (era|area|career|roadmap)|successful.*(engineer|cs)|become.*(ai|engineer)/.test(x)) {
+    return 'Open ROADMAP VIDEOS in the sidebar — it is the video path for a successful CS engineer in the AI era:\n\n1. Harvard CS50 (freeCodeCamp) — CS foundations.\n2. Machine Learning for Everybody (Kylie Ying).\n3. Intro to Large Language Models (Andrej Karpathy).\n4. Let\'s build GPT from scratch (Karpathy).\n5. Prompt Engineering Tutorial (freeCodeCamp).\n6. AI Engineer Roadmap in Hindi (Apna College).\n\nFollow the 4 stages on that page and mark each video watched.';
   }
   if (/project/.test(x)) {
     return 'Best project advice: solve one small problem. Start with the smallest version, finish it, then add features one at a time. Future has 3 guided projects: a portfolio, a task tracker (Python + Flask + SQL), and an AI study buddy. Open PROJECTS to begin.';
@@ -794,13 +850,15 @@ function act(a, b) {
   else if (a === 'video') openVideo(topics[topic][5]);
   else if (a === 'hindi-video') { const hv = hindiVideos[topic]; if (hv) openVideo(hv[2]); }
   else if (a === 'job-video') { const v = jobVideos[+b.dataset.index]; if (v) openVideo(v[2]); }
+  else if (a === 'career-video') { const i = +b.dataset.index, v = careerVideos[i]; if (v) { if (!state.careerWatched.includes(i)) { state.careerWatched.push(i); save(); } openVideo(v[2]); render(); } }
+  else if (a === 'career-toggle') { const i = +b.dataset.index, k = state.careerWatched.indexOf(i); if (k >= 0) state.careerWatched.splice(k, 1); else state.careerWatched.push(i); save(); render(); }
   else if (a === 'complete') { if (!state.completed.includes(topic)) { state.completed.push(topic); save(); } toast('Lesson completed. Great work!', true); render(); }
   else if (a === 'practice') { if (!state.practice.includes(topic)) { state.practice.push(topic); save(); toast('Practice done. You are building skill!', true); } render(); }
   else if (a === 'sound') { state.sound = !state.sound; save(); render(); }
   else if (a === 'theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); }
   else if (a === 'wall') { state.wall = state.wall === 'orbs' ? 'matrix' : state.wall === 'matrix' ? 'off' : 'orbs'; save(); toast(state.wall === 'matrix' ? 'Live wallpaper: Matrix rain' : state.wall === 'off' ? 'Live wallpaper: off' : 'Live wallpaper: Neon orbs', true); render(); }
   else if (a === 'project') toast('Start with one simple screen, then add one useful action.');
-  else if (a === 'reset') { localStorage.removeItem('futureState'); location.reload(); }
+  else if (a === 'reset') { localStorage.removeItem('futureState'); reloadApp('Fresh start. Rebuilding Future…'); }
 }
 
 /* ==================== 10. RENDER + GLOBAL BINDINGS + START ==================== */
@@ -814,7 +872,7 @@ function render() {
   document.getElementById('topUser').textContent = state.name;
   document.getElementById('soundToggle').textContent = state.sound ? '♫' : '♩';
   document.querySelectorAll('.nav-list .nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
-  const all = { home: ['Dashboard', home], roadmap: ['Roadmap', roadmap], learn: ['Learning Hub', learn], ai: ['Ask Future AI', ai], projects: ['Projects', projects], jobs: ['Job Preparation', jobs], profile: ['Profile', profile] };
+  const all = { home: ['Dashboard', home], roadmap: ['Roadmap', roadmap], career: ['Roadmap Videos', career], learn: ['Learning Hub', learn], ai: ['Ask Future AI', ai], projects: ['Projects', projects], jobs: ['Job Preparation', jobs], profile: ['Profile', profile] };
   wrap(all[view][0], all[view][1]());
   bindVideoTilt();
   if (view === 'ai') {
@@ -831,6 +889,7 @@ function render() {
 /* Top bar + onboarding bindings. */
 document.getElementById('themeToggle').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
 document.getElementById('soundToggle').onclick = () => { state.sound = !state.sound; save(); render(); };
+document.getElementById('reloadBtn').onclick = () => reloadApp('Reloading Future…');
 document.getElementById('mobileMenu').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
 document.getElementById('closeOnboarding').onclick = () => document.getElementById('onboardingModal').classList.add('hidden');
 document.getElementById('onboardingForm').onsubmit = e => {

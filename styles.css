@@ -1110,6 +1110,56 @@ body.light .video-preview:hover, body.light .job-video:hover {
 
 .check-item span { color: var(--lime); font-weight: 700; margin-right: 8px }
 
+/* ==================== 9b. PAGE: ROADMAP VIDEOS (AI-era career) ==================== */
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.stage-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0c1c2fcc;
+}
+
+.stage-no {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #c4f36b20;
+  color: var(--lime);
+  font: 700 13px 'Space Grotesk';
+}
+
+.stage-item h3 { font: 600 15px 'Space Grotesk'; margin: 0 0 4px }
+.stage-item p { color: var(--muted); font-size: 12px; line-height: 1.5; margin: 0 }
+
+.career-video { position: relative; overflow: hidden }
+.career-video.career-done { border-color: #c4f36b66; opacity: .78 }
+.career-video.career-done h3 { text-decoration: line-through; text-decoration-color: #c4f36b88 }
+.career-actions { display: flex; gap: 14px; align-items: center }
+
+.career-tip {
+  margin-top: 22px;
+  padding: 15px 17px;
+  border: 1px dashed #5de0d055;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.light .stage-item { background: #fff }
+
 /* ==================== 10. PAGE: PROJECTS + PROFILE ==================== */
 .project-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) }
 .project-card { min-height: 222px }
@@ -1308,6 +1358,78 @@ body.light .one-place span { background: #f2ffe4; border-color: #bfe8a0; color: 
 body.light .splash { background: radial-gradient(circle at 50% 42%, #f2faf6 0%, #dfece4 70%) }
 body.light .splash-word { color: #142234 }
 body.light .splash-skip { color: #7d8d9f }
+
+/* --- Stylish reload overlay --- */
+.reload-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 42%, #0d1e30 0%, #050d18 70%);
+  opacity: 0;
+  transform: scale(1.06);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+.reload-fx.show {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.reload-inner {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.reload-mark {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #d3fb84, #a8e34e);
+  color: #14200d;
+  font: 700 34px/1 'Space Grotesk';
+  transform: rotate(-8deg);
+  box-shadow: 0 0 46px #c4f36b4d, 0 14px 30px #00000059;
+  animation: mark-float 2.4s ease-in-out infinite;
+}
+
+.reload-bar {
+  width: min(56vw, 230px);
+  height: 3px;
+  border-radius: 99px;
+  background: #16304a;
+  overflow: hidden;
+}
+
+.reload-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5c9dff, #5de0d0, #c4f36b);
+  transform: translateX(-100%);
+  transition: transform 1.35s cubic-bezier(.45, 0, .55, 1);
+}
+
+.reload-fx.show .reload-bar i { transform: translateX(0) }
+
+.reload-inner p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
+
+body.light .reload-fx { background: radial-gradient(circle at 50% 42%, #f2faf6 0%, #dfece4 70%) }
+body.light .reload-inner p { color: #7d8d9f }
 
 /* ==================== 12. WALLPAPER + BANNER ==================== */
 #matrix {
