@@ -20,7 +20,7 @@
     "path": "/app/future-release.keystore",
     "alias": "future"
   },
-  "appVersionName": "3.3.0",
-  "appVersionCode": 7,
+  "appVersionName": "3.3.1",
+  "appVersionCode": 8,
   "webManifestUrl": "https://shubhamm6023.github.io/futuregoals/manifest.webmanifest"
 }
