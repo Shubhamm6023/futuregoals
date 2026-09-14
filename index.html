@@ -7,11 +7,15 @@
   <meta name="theme-color" content="#08111f">
   <meta name="description" content="FUTURE — hacker-style learning roadmap by SHUBHAM RAO. Every topic in one page: best videos (English + Hindi), easy notes, MCQs and practice.">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Future">
 
   <title>Future | SHUBHAM RAO</title>
 
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,6 +83,19 @@
       <div id="app"></div>
     </main>
 
+  </div>
+
+  <!-- Install PWA banner -->
+  <div class="install-banner hidden" id="installBanner">
+    <div class="install-banner-inner">
+      <span class="install-banner-icon">↗</span>
+      <div>
+        <strong>Install Future on your phone</strong>
+        <p>Add to your home screen for the full app experience.</p>
+      </div>
+      <button class="primary-button" id="installBtn">Install ↗</button>
+      <button class="text-button" id="installClose">✕</button>
+    </div>
   </div>
 
   <!-- Toast + onboarding modal -->

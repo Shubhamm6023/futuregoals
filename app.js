@@ -845,3 +845,41 @@ document.getElementById('onboardingForm').onsubmit = e => {
 matrix();
 boot(() => { if (!state.onboarded) setTimeout(() => document.getElementById('onboardingModal').classList.remove('hidden'), 400); });
 render();
+
+/* ==================== PWA INSTALL PROMPT ==================== */
+let deferredPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const installClose = document.getElementById('installClose');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  /* Show install banner after a short delay */
+  setTimeout(() => {
+    if (installBanner) installBanner.classList.remove('hidden');
+  }, 3000);
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') toast('App installed! 🎉', true);
+    deferredPrompt = null;
+    if (installBanner) installBanner.classList.add('hidden');
+  });
+}
+
+if (installClose) {
+  installClose.addEventListener('click', () => {
+    if (installBanner) installBanner.classList.add('hidden');
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  if (installBanner) installBanner.classList.add('hidden');
+  toast('Future is now on your home screen! 🎉', true);
+});
