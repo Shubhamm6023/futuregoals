@@ -31,7 +31,7 @@
     {
       "path": ".*",
       "scheme": "https",
-      "host": "youtu\.be|www\.youtube\.com",
+      "host": "youtu\\.be|www\\.youtube\\.com",
       "action": "android.intent.action.VIEW",
       "category": "android.intent.category.BROWSABLE"
     }
