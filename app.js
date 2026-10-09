@@ -886,24 +886,51 @@ function render() {
   }
 }
 
-/* Top bar + onboarding bindings. */
-document.getElementById('themeToggle').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
-document.getElementById('soundToggle').onclick = () => { state.sound = !state.sound; save(); render(); };
-document.getElementById('reloadBtn').onclick = () => reloadApp('Reloading Future…');
-document.getElementById('mobileMenu').onclick = () => document.querySelector('.sidebar').classList.toggle('open');
-document.getElementById('closeOnboarding').onclick = () => document.getElementById('onboardingModal').classList.add('hidden');
-document.getElementById('onboardingForm').onsubmit = e => {
-  e.preventDefault();
-  state.name = new FormData(e.target).get('name');
-  state.onboarded = true; save();
-  document.getElementById('onboardingModal').classList.add('hidden');
-  render();
-};
+/* Runtime-safe DOM query: returns the element or undefined when it hasn't been
+   rendered yet. This is the canonical guard for bindings that run at top level
+   before the section that defines the element is built by render(). */
+function safeGetId(id) {
+  return document.getElementById(id);
+}
+
+function bindGlobals() {
+  const themeToggle = safeGetId('themeToggle');
+  if (themeToggle) themeToggle.onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); render(); };
+  const soundToggle = safeGetId('soundToggle');
+  if (soundToggle) soundToggle.onclick = () => { state.sound = !state.sound; save(); render(); };
+  const reloadBtn = safeGetId('reloadBtn');
+  if (reloadBtn) reloadBtn.onclick = () => reloadApp('Reloading Future…');
+  const mobileMenu = safeGetId('mobileMenu');
+  if (mobileMenu) mobileMenu.onclick = () => document.querySelector('.sidebar').classList.toggle('open');
+  const closeOnboarding = safeGetId('closeOnboarding');
+  if (closeOnboarding) closeOnboarding.onclick = () => document.getElementById('onboardingModal').classList.add('hidden');
+  const onboardingForm = safeGetId('onboardingForm');
+  if (onboardingForm) onboardingForm.onsubmit = e => {
+    e.preventDefault();
+    state.name = new FormData(e.target).get('name');
+    state.onboarded = true; save();
+    document.getElementById('onboardingModal').classList.add('hidden');
+    render();
+  };
+}
+
+/* AI page bindings are set inside render() when the AI view is built. */
+function bindAiGlobals() {
+  const aiForm = safeGetId('aiForm');
+  if (aiForm) aiForm.onsubmit = e => { e.preventDefault(); submit(document.getElementById('aiInput').value); };
+  const clearChat = safeGetId('clearChat');
+  if (clearChat) clearChat.onclick = () => { chatHistory = []; render(); toast('New chat started.', true); };
+}
 
 /* Start the app. */
 matrix();
 boot(() => { if (!state.onboarded) setTimeout(() => document.getElementById('onboardingModal').classList.remove('hidden'), 400); });
 render();
+/* Global bindings: the elements are built inside render(), so bind them
+   here after the DOM has been initialized. Each binding is guarded with
+   safeGetId() so it never throws a TypeError on a null element. */
+bindGlobals();
+bindAiGlobals();
 
 /* ==================== PWA INSTALL PROMPT ==================== */
 let deferredPrompt = null;
